@@ -92,11 +92,9 @@ body{background:#0a0a0f;color:#fff;overflow-x:hidden;}
   </div>
   <div id="panel-cdm" class="tab-panel hidden slide-in space-y-3">
     <div class="glass-strong rounded-xl p-4">
-      <div class="flex items-center gap-3 mb-3">
-        <div>
-          <div class="font-black text-lg">Coupe du Monde 2026</div>
-          <div class="text-sm text-gray-400">USA · Canada · Mexique</div>
-        </div>
+      <div class="mb-3">
+        <div class="font-black text-lg">Coupe du Monde 2026</div>
+        <div class="text-sm text-gray-400">USA · Canada · Mexique</div>
       </div>
       <div id="cdm-countdown" class="glass rounded-lg p-3 text-center mb-3"></div>
       <div class="text-xs text-gray-500">48 equipes · 11 juin - 19 juillet 2026</div>
@@ -132,7 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function apiFetch(path) {
-  const res = await fetch(`https://api.football-data.org/v4/${path}`, {
+  const target = encodeURIComponent(`https://api.football-data.org/v4/${path}`);
+  const res = await fetch(`https://corsproxy.io/?${target}`, {
     headers: { "X-Auth-Token": API_KEY }
   });
   if (!res.ok) throw new Error(`Erreur ${res.status}`);
@@ -155,9 +154,10 @@ async function loadMatches() {
   } catch(e) {
     document.getElementById("today-matches").innerHTML = `
       <div class="glass rounded-xl p-6 text-center">
-        <div class="text-3xl mb-2">!</div>
+        <div class="text-3xl mb-2">⚠️</div>
         <div class="text-red-400 font-bold">${e.message}</div>
         <div class="text-gray-500 text-xs mt-2">Verifie ta connexion</div>
+        <button onclick="refreshAll()" class="mt-3 px-4 py-2 rounded-lg badge-cyan text-xs font-bold">Reessayer</button>
       </div>`;
   }
 }
@@ -205,12 +205,12 @@ async function processAndRender() {
   document.getElementById("today-matches").innerHTML = `<div class="flex justify-center py-8"><div class="spinner"></div></div>`;
   const analyzed = await Promise.all(allMatches.map(analyzeMatch));
   analyzed.sort((a, b) => b.confidence - a.confidence);
-  const liveM   = analyzed.filter(m => m.status === "IN_PLAY" || m.status === "PAUSED");
-  const soirM   = analyzed.filter(m => {
+  const liveM  = analyzed.filter(m => m.status === "IN_PLAY" || m.status === "PAUSED");
+  const soirM  = analyzed.filter(m => {
     if (m.status !== "TIMED" && m.status !== "SCHEDULED") return false;
     return new Date(m.utcDate).getHours() >= 17;
   });
-  const todayM  = analyzed.filter(m => m.status !== "IN_PLAY" && m.status !== "PAUSED");
+  const todayM = analyzed.filter(m => m.status !== "IN_PLAY" && m.status !== "PAUSED");
   renderMatchList(document.getElementById("today-matches"), todayM, "Aucun match programme aujourd'hui");
   renderMatchList(document.getElementById("soir-matches"), soirM, "Aucun match ce soir");
   renderCombo("combo-today", todayM);
@@ -338,9 +338,9 @@ function updateCDMCountdown() {
 
 function switchTab(tab) {
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
-  document.querySelectorAll(".tab-btn").forEach(b => { b.classList.remove("tab-active", "text-white"); b.classList.add("text-gray-400"); });
+  document.querySelectorAll(".tab-btn").forEach(b => { b.classList.remove("tab-active","text-white"); b.classList.add("text-gray-400"); });
   document.getElementById("panel-" + tab).classList.remove("hidden");
-  document.getElementById("tab-" + tab).classList.add("tab-active", "text-white");
+  document.getElementById("tab-" + tab).classList.add("tab-active","text-white");
 }
 
 function startLivePolling() {
@@ -349,7 +349,6 @@ function startLivePolling() {
 }
 
 function refreshAll() { loadMatches(); }
-
 setInterval(updateCDMCountdown, 60000);
 </script>
 </body>

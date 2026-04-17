@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function apiFetch(path) {
   const target = encodeURIComponent(`https://api.football-data.org/v4/${path}`);
-  const res = await fetch(`https://corsproxy.io/?${target}`, {
+  const res = await fetch(`https://api.allorigins.win/raw?url=${target}`, {
     headers: { "X-Auth-Token": API_KEY }
   });
   if (!res.ok) throw new Error(`Erreur ${res.status}`);

@@ -131,11 +131,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function apiFetch(path) {
   const target = encodeURIComponent(`https://api.football-data.org/v4/${path}`);
-  const res = await fetch(`https://api.allorigins.win/raw?url=${target}`, {
-    headers: { "X-Auth-Token": API_KEY }
-  });
+  const res = await fetch(`https://api.allorigins.win/get?url=${target}`);
   if (!res.ok) throw new Error(`Erreur ${res.status}`);
-  return res.json();
+  const json = await res.json();
+  return JSON.parse(json.contents);
 }
 
 async function initApp() {

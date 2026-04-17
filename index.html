@@ -200,7 +200,16 @@ async function analyzeMatch(match) {
 
 async function processAndRender() {
   document.getElementById("today-matches").innerHTML = `<div class="flex justify-center py-8"><div class="spinner"></div></div>`;
-  const analyzed = await Promise.all(allMatches.map(analyzeMatch));
+  
+  // Limite à 5 matchs max pour éviter 429
+  const limited = allMatches.slice(0, 5);
+  const analyzed = [];
+  for (const match of limited) {
+    const result = await analyzeMatch(match);
+    analyzed.push(result);
+    await new Promise(r => setTimeout(r, 500)); // pause 500ms entre chaque
+  }
+  
   analyzed.sort((a, b) => b.confidence - a.confidence);
   const liveM  = analyzed.filter(m => m.status === "IN_PLAY" || m.status === "PAUSED");
   const soirM  = analyzed.filter(m => {
@@ -214,14 +223,13 @@ async function processAndRender() {
   renderCombo("combo-soir", soirM);
   const liveEl = document.getElementById("live-matches");
   if (liveM.length === 0) {
-    liveEl.innerHTML = `<div class="glass rounded-xl p-6 text-center text-gray-400"><div class="font-semibold">Aucun match en direct</div><div class="text-xs mt-1">Reviens lors des matchs</div></div>`;
+    liveEl.innerHTML = `<div class="glass rounded-xl p-6 text-center text-gray-400"><div class="font-semibold">Aucun match en direct</div></div>`;
     document.getElementById("live-indicator").classList.add("hidden");
   } else {
     document.getElementById("live-indicator").classList.remove("hidden");
     renderMatchList(liveEl, liveM, "");
   }
 }
-
 function renderMatchList(container, matches, emptyMsg) {
   if (!matches.length) {
     container.innerHTML = `<div class="glass rounded-xl p-6 text-center text-gray-400 text-sm">${emptyMsg}</div>`;

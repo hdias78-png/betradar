@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="BetRadar"/>
-<link rel="manifest" href="/manifest.json"/>
-<link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+/manifest.json"/>
+/icons/icon-192.png"/>
 <title>BetRadar ⚡</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -108,15 +108,14 @@ body{background:#0a0a0f;color:#fff;overflow-x:hidden;}
 </main>
 
 <script>
-const PROXY = "https://corsproxy.io/?";
 const API_KEY = "04b25e0b04144451abb6e47aed171ea4";
 const LEAGUES = {
-  "PL":  {name:"Premier League", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", id:2021},
-  "FL1": {name:"Ligue 1",        flag:"🇫🇷", id:2015},
-  "BL1": {name:"Bundesliga",     flag:"🇩🇪", id:2002},
-  "PD":  {name:"La Liga",        flag:"🇪🇸", id:2014},
-  "PPL": {name:"Liga NOS",       flag:"🇵🇹", id:2017},
-  "CL":  {name:"Champions L.",   flag:"🏆", id:2001}
+  "PL":  {name:"Premier League",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",id:2021},
+  "FL1": {name:"Ligue 1",flag:"🇫🇷",id:2015},
+  "BL1": {name:"Bundesliga",flag:"🇩🇪",id:2002},
+  "PD":  {name:"La Liga",flag:"🇪🇸",id:2014},
+  "PPL": {name:"Liga NOS",flag:"🇵🇹",id:2017},
+  "CL":  {name:"Champions L.",flag:"🏆",id:2001}
 };
 const WC_TEAMS = {
   "UEFA":["France","Angleterre","Espagne","Portugal","Allemagne","Pays-Bas","Belgique","Croatie","Norvège","Écosse","Suisse","Autriche","Suède","Turquie","Bosnie","Tchéquie"],
@@ -143,12 +142,78 @@ async function initApp() {
 }
 
 async function apiFetch(path) {
-  const url = `https://api.football-data.org/v4/${path}`;
-  const res = await fetch(PROXY + encodeURIComponent(url), {
+  const target = `https://api.football-data.org/v4/${path}`;
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`;
+  const res = await fetch(proxyUrl, {
     headers: {"X-Auth-Token": API_KEY}
   });
-  if (!res.ok) throw new Error(`API ${res.status}`);
+  if (!res.ok) throw new Error(`Erreur API ${res.status}`);
   return res.json();
 }
 
 async function loadMatches() {
+  try {
+    const today = new Date().toISOString().split("T")[0];
+    const data = await apiFetch(`matches?date=${today}`);
+    const leagueIds = Object.values(LEAGUES).map(l => l.id);
+    allMatches = (data.matches || []).filter(m => leagueIds.includes(m.competition?.id));
+    processAndRender();
+    document.getElementById("last-update").textContent = "Mis à jour " + new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  } catch(e) {
+    document.getElementById("today-matches").innerHTML = `<div class="glass rounded-xl p-6 text-center"><div class="text-3xl mb-2">⚠️</div><div class="text-red-400 font-bold">${e.message}</div></div>`;
+  }
+}
+
+async function analyzeMatch(match) {
+  try {
+    const [homeData, awayData] = await Promise.all([
+      apiFetch(`teams/${match.homeTeam.id}/matches?status=FINISHED&limit=6`),
+      apiFetch(`teams/${match.awayTeam.id}/matches?status=FINISHED&limit=6`)
+    ]);
+    const hm = (homeData.matches||[]).slice(0,6);
+    const am = (awayData.matches||[]).slice(0,6);
+    const homeGoals = hm.map(m => m.homeTeam.id===match.homeTeam.id ? m.score.fullTime.home : m.score.fullTime.away);
+    const awayGoals = am.map(m => m.awayTeam.id===match.awayTeam.id ? m.score.fullTime.away : m.score.fullTime.home);
+    const homeForm = hm.map(m => {
+      const isHome = m.homeTeam.id===match.homeTeam.id;
+      const tg = isHome?m.score.fullTime.home:m.score.fullTime.away;
+      const og = isHome?m.score.fullTime.away:m.score.fullTime.home;
+      return tg>og?"W":tg===og?"D":"L";
+    });
+    const awayForm = am.map(m => {
+      const isAway = m.awayTeam.id===match.awayTeam.id;
+      const tg = isAway?m.score.fullTime.away:m.score.fullTime.home;
+      const og = isAway?m.score.fullTime.home:m.score.fullTime.away;
+      return tg>og?"W":tg===og?"D":"L";
+    });
+    const hsc = homeGoals.filter(g=>g>0).length;
+    const asc = awayGoals.filter(g=>g>0).length;
+    const hAvg = homeGoals.reduce((a,b)=>a+b,0)/(homeGoals.length||1);
+    const aAvg = awayGoals.reduce((a,b)=>a+b,0)/(awayGoals.length||1);
+    const avg = (hAvg+aAvg)/2;
+    const hStreak = homeForm.filter(r=>r==="W").length;
+    const aStreak = awayForm.filter(r=>r==="W").length;
+    let confidence = 50, picks = [];
+    if(hsc>=5&&asc>=5){confidence=Math.min(confidence+40,99);picks.push({type:"Over 0.5",badge:"green",icon:"⚽"});}
+    else if(hsc>=4&&asc>=4){confidence=Math.min(confidence+25,90);picks.push({type:"Over 0.5",badge:"cyan",icon:"⚽"});}
+    if(avg>=2.5) picks.push({type:"Over 1.5",badge:"yellow",icon:"🎯"});
+    if(hStreak>=4) picks.push({type:"Victoire "+match.homeTeam.shortName,badge:"cyan",icon:"🏆"});
+    if(aStreak>=4) picks.push({type:"Victoire "+match.awayTeam.shortName,badge:"cyan",icon:"🏆"});
+    return {...match,confidence,picks,homeForm,awayForm,homeAvgGoals:hAvg,awayAvgGoals:aAvg};
+  } catch(e) {
+    return {...match,confidence:50,picks:[],homeForm:[],awayForm:[],homeAvgGoals:0,awayAvgGoals:0};
+  }
+}
+
+async function processAndRender() {
+  document.getElementById("today-matches").innerHTML = `<div class="flex justify-center py-8"><div class="spinner"></div></div>`;
+  const analyzed = await Promise.all(allMatches.map(analyzeMatch));
+  analyzed.sort((a,b)=>b.confidence-a.confidence);
+  const liveM = analyzed.filter(m=>m.status==="IN_PLAY"||m.status==="PAUSED");
+  const soirM = analyzed.filter(m=>{
+    if(m.status!=="TIMED"&&m.status!=="SCHEDULED") return false;
+    return new Date(m.utcDate).getHours()>=17;
+  });
+  const todayM = analyzed.filter(m=>m.status!=="IN_PLAY"&&m.status!=="PAUSED");
+  renderMatchList(document.getElementById("today-matches"), todayM, "Aucun match programmé aujourd'hui");
+  renderMatchList(document.getElementById("soir-matches"), soirM, 

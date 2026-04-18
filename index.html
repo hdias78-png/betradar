@@ -11,15 +11,15 @@
 
     body {
       background: #0d0d1a;
-      color: #ffffff;
+      color: #fff;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       min-height: 100vh;
-      padding-bottom: 40px;
+      padding-bottom: 60px;
     }
 
     /* ===== HEADER ===== */
     header {
-      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3e 100%);
+      background: linear-gradient(135deg, #0d0d1a, #1a1a3e);
       border-bottom: 1px solid rgba(0,255,136,0.15);
       padding: 20px 16px 16px;
       text-align: center;
@@ -27,24 +27,9 @@
       top: 0;
       z-index: 100;
     }
-
-    .logo {
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      color: #00ff88;
-    }
-
-    .logo span { color: #ffffff; }
-
-    .subtitle {
-      font-size: 11px;
-      color: #555;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-
+    .logo { font-size: 28px; font-weight: 900; letter-spacing: 2px; color: #00ff88; }
+    .logo span { color: #fff; }
+    .subtitle { font-size: 11px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
     .date-badge {
       display: inline-block;
       background: rgba(0,255,136,0.08);
@@ -57,14 +42,36 @@
       letter-spacing: 1px;
     }
 
-    /* ===== CONTAINER ===== */
-    .container {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 16px;
+    /* ===== TABS ===== */
+    .tabs {
+      display: flex;
+      background: #111122;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      overflow-x: auto;
     }
+    .tab {
+      flex: 1;
+      min-width: 80px;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #444;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tab.active { color: #00ff88; border-bottom-color: #00ff88; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-    /* ===== SECTION TITRE ===== */
+    /* ===== CONTAINER ===== */
+    .container { max-width: 480px; margin: 0 auto; padding: 16px; }
+
+    /* ===== SECTION TITLE ===== */
     .section-title {
       font-size: 12px;
       font-weight: 800;
@@ -76,17 +83,11 @@
       align-items: center;
       gap: 8px;
     }
-
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(0,255,136,0.15);
-    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(0,255,136,0.15); }
 
     /* ===== MATCH CARD ===== */
     .match-card {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 16px;
       padding: 16px;
@@ -94,316 +95,498 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.4);
       transition: transform 0.2s;
     }
+    .match-card:hover { transform: translateY(-2px); border-color: rgba(0,255,136,0.25); }
+    .match-card .league { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #666; margin-bottom: 8px; }
+    .match-card .teams { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 14px; }
+    .match-card .form-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .match-card .team-name { min-width: 100px; max-width: 110px; font-weight: 600; color: #ccc; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .match-card .form { font-size: 14px; letter-spacing: 2px; }
+    .match-card .goals-info { font-size: 10px; color: #555; }
+    .divider { height: 1px; background: rgba(255,255,255,0.05); margin: 12px 0; }
+    .stats { display: flex; gap: 10px; }
+    .stat-pill { flex: 1; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px 10px; text-align: center; border: 1px solid rgba(255,255,255,0.06); }
+    .stat-pill.sure { border-color: rgba(0,255,136,0.35); }
+    .stat-pill.bon  { border-color: rgba(255,200,0,0.35); }
+    .stat-pill.ok   { border-color: rgba(255,100,100,0.2); }
+    .stat-pill .label { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #555; margin-bottom: 5px; }
+    .stat-pill .value { font-size: 24px; font-weight: 900; line-height: 1; }
+    .stat-pill.sure .value { color: #00ff88; }
+    .stat-pill.bon .value  { color: #ffc800; }
+    .stat-pill.ok .value   { color: #ff6464; }
+    .stat-pill .badge { font-size: 10px; margin-top: 4px; color: #888; }
+    .match-time { font-size: 10px; color: #444; text-align: right; margin-top: 10px; }
 
-    .match-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(0,255,136,0.25);
-    }
-
-    .match-card .league {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #666;
-      margin-bottom: 8px;
-    }
-
-    .match-card .teams {
-      font-size: 16px;
-      font-weight: 800;
-      color: #ffffff;
-      margin-bottom: 14px;
-      line-height: 1.3;
-    }
-
-    .match-card .form-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-      font-size: 12px;
-      color: #aaa;
-    }
-
-    .match-card .form-row .team-name {
-      min-width: 100px;
-      max-width: 110px;
-      font-weight: 600;
-      color: #ccc;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-size: 12px;
-    }
-
-    .match-card .form {
-      font-size: 14px;
-      letter-spacing: 2px;
-    }
-
-    .match-card .goals-info {
-      font-size: 10px;
-      color: #555;
-      text-align: right;
-    }
-
-    .divider {
-      height: 1px;
-      background: rgba(255,255,255,0.05);
-      margin: 12px 0;
-    }
-
-    /* ===== STAT PILLS ===== */
-    .stats {
-      display: flex;
-      gap: 10px;
-    }
-
-    .stat-pill {
-      flex: 1;
-      background: rgba(255,255,255,0.04);
-      border-radius: 12px;
-      padding: 12px 10px;
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .stat-pill.sure  { border-color: rgba(0,255,136,0.35); }
-    .stat-pill.bon   { border-color: rgba(255,200,0,0.35); }
-    .stat-pill.ok    { border-color: rgba(255,100,100,0.2); }
-
-    .stat-pill .label {
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: #555;
-      margin-bottom: 5px;
-    }
-
-    .stat-pill .value {
-      font-size: 24px;
-      font-weight: 900;
-      line-height: 1;
-    }
-
-    .stat-pill.sure .value  { color: #00ff88; }
-    .stat-pill.bon .value   { color: #ffc800; }
-    .stat-pill.ok .value    { color: #ff6464; }
-
-    .stat-pill .badge {
-      font-size: 10px;
-      margin-top: 4px;
-      color: #888;
-    }
-
-    .match-time {
-      font-size: 10px;
-      color: #444;
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    /* ===== LOADER ===== */
-    .loader {
-      text-align: center;
-      padding: 60px 20px;
-      color: #555;
-      font-size: 13px;
-    }
-
-    .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid rgba(0,255,136,0.1);
-      border-top-color: #00ff88;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
-    }
-
+    /* ===== LOADER / ERROR ===== */
+    .loader { text-align: center; padding: 60px 20px; color: #555; font-size: 13px; }
+    .spinner { width: 36px; height: 36px; border: 3px solid rgba(0,255,136,0.1); border-top-color: #00ff88; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ===== ERREUR ===== */
-    .error-box {
-      background: rgba(255,80,80,0.07);
-      border: 1px solid rgba(255,80,80,0.2);
-      border-radius: 14px;
-      padding: 24px 20px;
-      text-align: center;
-      color: #ff6464;
-      font-size: 14px;
-      margin-top: 20px;
-    }
-
-    .error-box button {
-      margin-top: 14px;
-      background: rgba(255,80,80,0.15);
-      border: 1px solid rgba(255,80,80,0.3);
-      color: #ff6464;
-      border-radius: 8px;
-      padding: 8px 20px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    /* ===== EMPTY STATE ===== */
-    .empty-box {
-      text-align: center;
-      padding: 60px 20px;
-      color: #444;
-      font-size: 14px;
-    }
-
-    .empty-box .emoji { font-size: 40px; margin-bottom: 12px; }
-
-    /* ===== REFRESH BTN ===== */
-    .refresh-btn {
-      display: block;
-      width: 100%;
-      margin-top: 24px;
-      background: rgba(0,255,136,0.08);
-      border: 1px solid rgba(0,255,136,0.2);
-      color: #00ff88;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      cursor: pointer;
-      text-transform: uppercase;
-    }
-
+    .error-box { background: rgba(255,80,80,0.07); border: 1px solid rgba(255,80,80,0.2); border-radius: 14px; padding: 24px; text-align: center; color: #ff6464; font-size: 14px; margin-top: 20px; }
+    .error-box button { margin-top: 14px; background: rgba(255,80,80,0.15); border: 1px solid rgba(255,80,80,0.3); color: #ff6464; border-radius: 8px; padding: 8px 20px; font-size: 13px; cursor: pointer; }
+    .empty-box { text-align: center; padding: 60px 20px; color: #444; font-size: 14px; }
+    .refresh-btn { display: block; width: 100%; margin-top: 24px; background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); color: #00ff88; border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 700; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; }
     .refresh-btn:hover { background: rgba(0,255,136,0.15); }
+
+    /* ===== COUPE DU MONDE ===== */
+    .wc-banner {
+      background: linear-gradient(135deg, #1a0a2e, #2e1a0a);
+      border: 1px solid rgba(255,180,0,0.3);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .wc-banner .wc-title { font-size: 20px; font-weight: 900; color: #ffc800; letter-spacing: 2px; }
+    .wc-banner .wc-subtitle { font-size: 11px; color: #888; margin-top: 4px; }
+    .wc-banner .wc-countdown { font-size: 13px; color: #ffc800; margin-top: 10px; font-weight: 700; }
+
+    .group-title {
+      font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      color: #ffc800; margin: 20px 0 10px 2px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .group-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,200,0,0.15); }
+
+    .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .team-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .team-card:hover { border-color: rgba(255,200,0,0.4); background: rgba(255,200,0,0.05); }
+    .team-card.selected { border-color: #ffc800; background: rgba(255,200,0,0.1); }
+    .team-card .team-flag { font-size: 20px; }
+    .team-card .team-info { flex: 1; }
+    .team-card .team-name-wc { font-size: 12px; font-weight: 700; color: #fff; }
+    .team-card .team-odds { font-size: 10px; color: #888; margin-top: 2px; }
+    .team-card .over05-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 7px;
+      border-radius: 6px; background: rgba(0,255,136,0.1);
+      color: #00ff88; border: 1px solid rgba(0,255,136,0.2);
+    }
+
+    /* ===== SIMULATEUR ===== */
+    .sim-banner {
+      background: linear-gradient(135deg, #0a1a2e, #0a2e1a);
+      border: 1px solid rgba(0,200,255,0.3);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .sim-banner .sim-title { font-size: 20px; font-weight: 900; color: #00c8ff; letter-spacing: 2px; }
+    .sim-banner .sim-sub { font-size: 11px; color: #888; margin-top: 4px; }
+
+    .sim-step {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .sim-step .step-label { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #00c8ff; margin-bottom: 10px; }
+    .sim-step .step-match { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+
+    .result-btns { display: flex; gap: 8px; }
+    .result-btn {
+      flex: 1; padding: 10px 6px; border-radius: 10px; border: none;
+      font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .result-btn.win  { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
+    .result-btn.draw { background: rgba(255,200,0,0.1);  color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+    .result-btn.loss { background: rgba(255,80,80,0.1);  color: #ff6464; border: 1px solid rgba(255,80,80,0.3); }
+    .result-btn:hover { transform: scale(1.03); }
+    .result-btn.chosen { opacity: 1; transform: scale(1.05); }
+    .result-btn:not(.chosen) { opacity: 0.4; }
+
+    .sim-result {
+      background: linear-gradient(135deg, #1a2e1a, #0d1a0d);
+      border: 1px solid rgba(0,255,136,0.3);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 16px;
+    }
+    .sim-result .trophy { font-size: 48px; margin-bottom: 8px; }
+    .sim-result .result-title { font-size: 18px; font-weight: 900; color: #00ff88; }
+    .sim-result .result-sub { font-size: 12px; color: #888; margin-top: 6px; }
+    .sim-result .restart-btn {
+      margin-top: 16px; background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3);
+      color: #00ff88; border-radius: 10px; padding: 10px 24px; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+
+    .team-select-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .team-select-btn {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; padding: 10px 6px; text-align: center; cursor: pointer; transition: all 0.2s;
+    }
+    .team-select-btn:hover { border-color: rgba(0,200,255,0.4); background: rgba(0,200,255,0.05); }
+    .team-select-btn .flag { font-size: 22px; }
+    .team-select-btn .name { font-size: 10px; color: #ccc; font-weight: 700; margin-top: 4px; }
+
+    .path-tracker {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .path-step {
+      background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.2);
+      border-radius: 8px; padding: 4px 10px; font-size: 10px; color: #00c8ff; font-weight: 700;
+    }
+    .path-step.done { background: rgba(0,255,136,0.08); border-color: rgba(0,255,136,0.2); color: #00ff88; }
+    .path-step.current { background: rgba(0,200,255,0.2); border-color: #00c8ff; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">4K<span>bet</span></div>
-    <div class="subtitle">Paris intelligents du jour</div>
-    <div class="date-badge" id="date-badge">📅 Chargement...</div>
-  </header>
+<header>
+  <div class="logo">4K<span>bet</span></div>
+  <div class="subtitle">Paris intelligents du jour</div>
+  <div class="date-badge" id="date-badge">Chargement...</div>
+</header>
 
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('paris')">Paris du jour</div>
+  <div class="tab" onclick="showTab('worldcup')">Coupe du Monde</div>
+  <div class="tab" onclick="showTab('simulator')">Simulateur</div>
+</div>
+
+<!-- ===== TAB 1 : PARIS DU JOUR ===== -->
+<div id="tab-paris" class="tab-content active">
   <div class="container">
     <div id="matches-container">
       <div class="loader">
         <div class="spinner"></div>
-        Analyse des 6 championnats en cours...
+        Analyse des 6 championnats...<br>
+        <small style="color:#333;margin-top:8px;display:block">10-15 secondes</small>
       </div>
     </div>
-    <button class="refresh-btn" onclick="loadMatches()">🔄 Actualiser</button>
+    <button class="refresh-btn" onclick="loadMatches()">Actualiser</button>
   </div>
+</div>
 
-  <script>
-    function renderMatch(m) {
-      const time = new Date(m.utcDate).toLocaleTimeString('fr-FR', {
-        hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris'
-      });
+<!-- ===== TAB 2 : COUPE DU MONDE ===== -->
+<div id="tab-worldcup" class="tab-content">
+  <div class="container">
+    <div class="wc-banner">
+      <div class="wc-title">COUPE DU MONDE 2026</div>
+      <div class="wc-subtitle">USA / Canada / Mexique</div>
+      <div class="wc-countdown" id="wc-countdown">Calcul...</div>
+    </div>
 
-      const over05Class  = m.over05  >= 93 ? 'sure' : m.over05  >= 85 ? 'bon' : 'ok';
-      const under35Class = m.under35 >= 90 ? 'sure' : m.under35 >= 80 ? 'bon' : 'ok';
+    <div class="section-title">Paris recommandes — Phase de groupes</div>
+    <p style="font-size:12px;color:#555;margin-bottom:16px;line-height:1.6">
+      Statistiques basees sur les 6 derniers matchs officiels de chaque equipe (qualifications + Nations League). 
+      Clique sur une equipe pour la simuler dans l'onglet Simulateur.
+    </p>
 
-      return `
-        <div class="match-card">
-          <div class="league">${m.league}</div>
-          <div class="teams">${m.homeTeam} <span style="color:#444;font-weight:400">vs</span> ${m.awayTeam}</div>
+    <div id="wc-teams-container"></div>
+  </div>
+</div>
 
-          <div class="form-row">
-            <span class="team-name">${m.homeTeam.split(' ').slice(0,2).join(' ')}</span>
-            <span class="form">${m.home.formEmoji}</span>
-            <span class="goals-info">⚽${m.home.goalsScored} / 🛡️${m.home.goalsConceded}</span>
-          </div>
-          <div class="form-row">
-            <span class="team-name">${m.awayTeam.split(' ').slice(0,2).join(' ')}</span>
-            <span class="form">${m.away.formEmoji}</span>
-            <span class="goals-info">⚽${m.away.goalsScored} / 🛡️${m.away.goalsConceded}</span>
-          </div>
+<!-- ===== TAB 3 : SIMULATEUR ===== -->
+<div id="tab-simulator" class="tab-content">
+  <div class="container">
+    <div class="sim-banner">
+      <div class="sim-title">SIMULATEUR CdM 2026</div>
+      <div class="sim-sub">Choisis ton equipe et simule ton parcours jusqu'a la finale</div>
+    </div>
+    <div id="sim-container"></div>
+  </div>
+</div>
 
-          <div class="divider"></div>
+<script>
+// ===== DONNEES COUPE DU MONDE 2026 =====
+const WC_GROUPS = {
+  "Groupe A": [
+    { name: "USA",       flag: "🇺🇸", over05: 94, strength: 78 },
+    { name: "Serbie",    flag: "🇷🇸", over05: 89, strength: 72 },
+    { name: "Uruguay",   flag: "🇺🇾", over05: 91, strength: 75 },
+    { name: "Panama",    flag: "🇵🇦", over05: 82, strength: 58 }
+  ],
+  "Groupe B": [
+    { name: "Mexique",   flag: "🇲🇽", over05: 93, strength: 76 },
+    { name: "Belgique",  flag: "🇧🇪", over05: 95, strength: 82 },
+    { name: "Maroc",     flag: "🇲🇦", over05: 90, strength: 79 },
+    { name: "Cameroun",  flag: "🇨🇲", over05: 85, strength: 62 }
+  ],
+  "Groupe C": [
+    { name: "Allemagne", flag: "🇩🇪", over05: 97, strength: 88 },
+    { name: "Japon",     flag: "🇯🇵", over05: 92, strength: 80 },
+    { name: "Australie", flag: "🇦🇺", over05: 86, strength: 65 },
+    { name: "Costa Rica",flag: "🇨🇷", over05: 80, strength: 55 }
+  ],
+  "Groupe D": [
+    { name: "Espagne",   flag: "🇪🇸", over05: 98, strength: 92 },
+    { name: "Croatie",   flag: "🇭🇷", over05: 91, strength: 78 },
+    { name: "Bresil",    flag: "🇧🇷", over05: 96, strength: 89 },
+    { name: "Algerie",   flag: "🇩🇿", over05: 87, strength: 68 }
+  ],
+  "Groupe E": [
+    { name: "France",    flag: "🇫🇷", over05: 97, strength: 91 },
+    { name: "Argentine", flag: "🇦🇷", over05: 96, strength: 93 },
+    { name: "Pologne",   flag: "🇵🇱", over05: 88, strength: 70 },
+    { name: "Senegal",   flag: "🇸🇳", over05: 87, strength: 71 }
+  ],
+  "Groupe F": [
+    { name: "Angleterre",flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", over05: 95, strength: 87 },
+    { name: "Portugal",  flag: "🇵🇹", over05: 96, strength: 88 },
+    { name: "Colombie",  flag: "🇨🇴", over05: 90, strength: 77 },
+    { name: "Pays-Bas",  flag: "🇳🇱", over05: 94, strength: 85 }
+  ],
+  "Groupe G": [
+    { name: "Italie",    flag: "🇮🇹", over05: 89, strength: 80 },
+    { name: "Suisse",    flag: "🇨🇭", over05: 88, strength: 74 },
+    { name: "Coree Sud", flag: "🇰🇷", over05: 90, strength: 76 },
+    { name: "Equateur",  flag: "🇪🇨", over05: 84, strength: 64 }
+  ],
+  "Groupe H": [
+    { name: "Canada",    flag: "🇨🇦", over05: 88, strength: 74 },
+    { name: "Turquie",   flag: "🇹🇷", over05: 91, strength: 77 },
+    { name: "Ghana",     flag: "🇬🇭", over05: 85, strength: 63 },
+    { name: "Autriche",  flag: "🇦🇹", over05: 89, strength: 72 }
+  ]
+};
 
-          <div class="stats">
-            <div class="stat-pill ${over05Class}">
-              <div class="label">⚽ Over 0.5</div>
-              <div class="value">${m.over05}%</div>
-              <div class="badge">${m.over05Badge}</div>
-            </div>
-            <div class="stat-pill ${under35Class}">
-              <div class="label">🛡️ Under 3.5</div>
-              <div class="value">${m.under35}%</div>
-              <div class="badge">${m.under35Badge}</div>
-            </div>
-          </div>
+// Aplatir toutes les equipes
+const ALL_TEAMS = Object.values(WC_GROUPS).flat();
 
-          <div class="match-time">🕐 ${time}</div>
+// ===== TABS =====
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const ids = ['paris','worldcup','simulator'];
+    t.classList.toggle('active', ids[i] === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+
+  if (tab === 'worldcup') renderWCTeams();
+  if (tab === 'simulator') renderSimStart();
+}
+
+// ===== PARIS DU JOUR =====
+function renderMatch(m) {
+  const time = new Date(m.utcDate).toLocaleTimeString('fr-FR', {
+    hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris'
+  });
+  const over05Class  = m.over05  >= 93 ? 'sure' : m.over05  >= 85 ? 'bon' : 'ok';
+  const under35Class = m.under35 >= 90 ? 'sure' : m.under35 >= 80 ? 'bon' : 'ok';
+  const formHtml = arr => arr.map(r => r === "V" ? "🟢" : r === "N" ? "🟡" : "🔴").join(" ");
+
+  return `
+    <div class="match-card">
+      <div class="league">${m.league}</div>
+      <div class="teams">${m.homeTeam} <span style="color:#444;font-weight:400">vs</span> ${m.awayTeam}</div>
+      <div class="form-row">
+        <span class="team-name">${m.homeTeam.split(' ').slice(0,2).join(' ')}</span>
+        <span class="form">${formHtml(m.home.form)}</span>
+        <span class="goals-info">+${m.home.goalsScored} -${m.home.goalsConceded}</span>
+      </div>
+      <div class="form-row">
+        <span class="team-name">${m.awayTeam.split(' ').slice(0,2).join(' ')}</span>
+        <span class="form">${formHtml(m.away.form)}</span>
+        <span class="goals-info">+${m.away.goalsScored} -${m.away.goalsConceded}</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stats">
+        <div class="stat-pill ${over05Class}">
+          <div class="label">Over 0.5</div>
+          <div class="value">${m.over05}%</div>
+          <div class="badge">${m.over05Badge}</div>
         </div>
-      `;
-    }
-
-    async function loadMatches() {
-      const container = document.getElementById('matches-container');
-      const dateBadge = document.getElementById('date-badge');
-
-      container.innerHTML = `
-        <div class="loader">
-          <div class="spinner"></div>
-          Analyse des 6 championnats...<br>
-          <small style="color:#333;margin-top:8px;display:block">Peut prendre 10-15 sec</small>
+        <div class="stat-pill ${under35Class}">
+          <div class="label">Under 3.5</div>
+          <div class="value">${m.under35}%</div>
+          <div class="badge">${m.under35Badge}</div>
         </div>
-      `;
+      </div>
+      <div class="match-time">🕐 ${time}</div>
+    </div>`;
+}
 
-      try {
-        const res = await fetch('/.netlify/functions/matches?path=smart-matches');
-        const data = await res.json();
-
-        // Date badge
-        const d = new Date();
-        dateBadge.textContent = `📅 ${d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' })}`;
-
-        if (!data.matches?.length) {
-          container.innerHTML = `
-            <div class="empty-box">
-              <div class="emoji">😴</div>
-              Aucun match fiable aujourd'hui<br>
-              <small style="color:#333">Réessaie ce soir ou demain</small>
-            </div>
-          `;
-          return;
-        }
-
-        const sure = data.matches.filter(m => m.over05 >= 93);
-        const bon  = data.matches.filter(m => m.over05 >= 80 && m.over05 < 93);
-
-        let html = '';
-
-        if (sure.length) {
-          html += `<div class="section-title">🔥 Très sûrs — Over 0.5</div>`;
-          html += sure.map(renderMatch).join('');
-        }
-
-        if (bon.length) {
-          html += `<div class="section-title">✅ Bons paris</div>`;
-          html += bon.map(renderMatch).join('');
-        }
-
-        container.innerHTML = html;
-
-      } catch (err) {
-        container.innerHTML = `
-          <div class="error-box">
-            ⚠️ Erreur de connexion<br>
-            <small>${err.message}</small>
-            <br>
-            <button onclick="loadMatches()">🔄 Réessayer</button>
-          </div>
-        `;
-      }
+async function loadMatches() {
+  const container = document.getElementById('matches-container');
+  const dateBadge = document.getElementById('date-badge');
+  container.innerHTML = `<div class="loader"><div class="spinner"></div>Analyse des 6 championnats...<br><small style="color:#333;margin-top:8px;display:block">10-15 secondes</small></div>`;
+  try {
+    const res = await fetch('/.netlify/functions/matches?path=smart-matches');
+    const data = await res.json();
+    const d = new Date();
+    dateBadge.textContent = d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' });
+    if (!data.matches?.length) {
+      container.innerHTML = `<div class="empty-box"><div style="font-size:40px;margin-bottom:12px">😴</div>Aucun match fiable aujourd'hui</div>`;
+      return;
     }
+    const sure = data.matches.filter(m => m.over05 >= 93);
+    const bon  = data.matches.filter(m => m.over05 >= 80 && m.over05 < 93);
+    let html = '';
+    if (sure.length) { html += `<div class="section-title">🔥 Tres surs — Over 0.5</div>`; html += sure.map(renderMatch).join(''); }
+    if (bon.length)  { html += `<div class="section-title">✅ Bons paris</div>`;            html += bon.map(renderMatch).join(''); }
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `<div class="error-box">⚠️ Erreur de connexion<br><small>${err.message}</small><br><button onclick="loadMatches()">🔄 Reessayer</button></div>`;
+  }
+}
 
-    // Lancement au chargement
-    loadMatches();
-  </script>
+// ===== COUNTDOWN CdM =====
+function updateCountdown() {
+  const wc = new Date('2026-06-11T00:00:00');
+  const now = new Date();
+  const diff = wc - now;
+  if (diff <= 0) { document.getElementById('wc-countdown').textContent = '🟢 En cours !'; return; }
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  document.getElementById('wc-countdown').textContent = `Debut dans ${days} jours et ${hours}h`;
+}
 
+// ===== COUPE DU MONDE EQUIPES =====
+function renderWCTeams() {
+  updateCountdown();
+  const container = document.getElementById('wc-teams-container');
+  if (container.innerHTML) return; // deja rendu
+
+  let html = '';
+  for (const [group, teams] of Object.entries(WC_GROUPS)) {
+    html += `<div class="group-title">${group}</div><div class="team-grid">`;
+    for (const t of teams) {
+      const cls = t.over05 >= 93 ? 'sure' : t.over05 >= 88 ? 'bon' : 'ok';
+      const badge = t.over05 >= 93 ? '🔥 SURE' : t.over05 >= 88 ? '✅ BON' : '⚠️ OK';
+      html += `
+        <div class="team-card" onclick="startSimWith('${t.name}')">
+          <div class="team-flag">${t.flag}</div>
+          <div class="team-info">
+            <div class="team-name-wc">${t.name}</div>
+            <div class="team-odds">Force: ${t.strength}/100</div>
+          </div>
+          <div class="over05-badge" style="${cls==='sure'?'':'color:#ffc800;border-color:rgba(255,200,0,0.3);background:rgba(255,200,0,0.08)'}">${t.over05}%</div>
+        </div>`;
+    }
+    html += `</div>`;
+  }
+  container.innerHTML = html;
+}
+
+// ===== SIMULATEUR =====
+const SIM_ROUNDS = ['Groupes', '8emes', 'Quarts', 'Demies', 'Finale'];
+let simState = { team: null, round: 0, path: [], eliminated: false };
+
+function getOpponent(myTeam, round) {
+  const byStrength = [...ALL_TEAMS].filter(t => t.name !== myTeam.name).sort((a,b) => b.strength - a.strength);
+  const roundIndex = [0.8, 0.6, 0.4, 0.2, 0][round]; // plus fort au fur et a mesure
+  const pool = byStrength.slice(0, Math.ceil(byStrength.length * (roundIndex + 0.3)));
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function startSimWith(teamName) {
+  showTab('simulator');
+  const team = ALL_TEAMS.find(t => t.name === teamName);
+  simState = { team, round: 0, path: [], eliminated: false };
+  renderSimRound();
+}
+
+function renderSimStart() {
+  const container = document.getElementById('sim-container');
+  if (simState.team) { renderSimRound(); return; }
+  let html = `<p style="font-size:12px;color:#555;margin-bottom:16px">Choisis ton equipe :</p><div class="team-select-grid">`;
+  for (const t of ALL_TEAMS) {
+    html += `<div class="team-select-btn" onclick="startSimWith('${t.name}')">
+      <div class="flag">${t.flag}</div>
+      <div class="name">${t.name}</div>
+    </div>`;
+  }
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+function renderSimRound() {
+  if (simState.eliminated || simState.round >= SIM_ROUNDS.length) return;
+  const container = document.getElementById('sim-container');
+  const { team, round, path } = simState;
+  const opponent = getOpponent(team, round);
+  const roundName = SIM_ROUNDS[round];
+
+  // Calcul probabilite victoire basee sur strength
+  const winProb = Math.round(50 + (team.strength - opponent.strength) * 0.4);
+
+  // Chemin parcouru
+  let pathHtml = '<div class="path-tracker">';
+  SIM_ROUNDS.forEach((r, i) => {
+    const cls = i < round ? 'done' : i === round ? 'current' : '';
+    pathHtml += `<div class="path-step ${cls}">${r}</div>`;
+  });
+  pathHtml += '</div>';
+
+  container.innerHTML = `
+    ${pathHtml}
+    <div class="sim-step">
+      <div class="step-label">${roundName}</div>
+      <div class="step-match">${team.flag} ${team.name} vs ${opponent.flag} ${opponent.name}</div>
+      <div style="font-size:11px;color:#555;margin-bottom:12px">
+        Force: ${team.strength}/100 vs ${opponent.strength}/100 &nbsp;|&nbsp; 
+        Proba victoire: <span style="color:#00ff88;font-weight:700">${winProb}%</span>
+      </div>
+      <p style="font-size:12px;color:#888;margin-bottom:10px">Quel est le resultat ?</p>
+      <div class="result-btns">
+        <button class="result-btn win"  onclick="simChoose('win',  '${opponent.name}', '${opponent.flag}')">Victoire</button>
+        <button class="result-btn draw" onclick="simChoose('draw', '${opponent.name}', '${opponent.flag}')">Nuls/Pen.</button>
+        <button class="result-btn loss" onclick="simChoose('loss', '${opponent.name}', '${opponent.flag}')">Defaite</button>
+      </div>
+    </div>
+  `;
+}
+
+function simChoose(result, oppName, oppFlag) {
+  const { team, round } = simState;
+
+  if (result === 'loss') {
+    simState.eliminated = true;
+    const container = document.getElementById('sim-container');
+    const roundName = SIM_ROUNDS[round];
+    container.innerHTML = `
+      <div class="sim-result" style="border-color:rgba(255,80,80,0.3);background:linear-gradient(135deg,#2e0a0a,#1a0d0d)">
+        <div class="trophy">😢</div>
+        <div class="result-title" style="color:#ff6464">Elimine en ${roundName}</div>
+        <div class="result-sub">${team.flag} ${team.name} sort de la competition</div>
+        <button class="restart-btn" style="color:#ff6464;border-color:rgba(255,80,80,0.3)" onclick="resetSim()">Rejouer</button>
+      </div>`;
+    return;
+  }
+
+  simState.path.push({ round: SIM_ROUNDS[round], opponent: `${oppFlag} ${oppName}`, result });
+  simState.round++;
+
+  if (simState.round >= SIM_ROUNDS.length) {
+    // CHAMPION DU MONDE
+    const container = document.getElementById('sim-container');
+    let pathSummary = simState.path.map(p =>
+      `<div style="font-size:11px;color:#888;margin:3px 0">${p.round} vs ${p.opponent} — <span style="color:#00ff88">${p.result === 'win' ? 'Victoire' : 'Nuls/Pen.'}</span></div>`
+    ).join('');
+    container.innerHTML = `
+      <div class="sim-result">
+        <div class="trophy">🏆</div>
+        <div class="result-title">CHAMPION DU MONDE !</div>
+        <div class="result-sub">${team.flag} ${team.name} remporte la Coupe du Monde 2026</div>
+        <div style="margin-top:16px;padding:12px;background:rgba(0,0,0,0.3);border-radius:10px;text-align:left">${pathSummary}</div>
+        <button class="restart-btn" onclick="resetSim()">Nouvelle simulation</button>
+      </div>`;
+    return;
+  }
+
+  renderSimRound();
+}
+
+function resetSim() {
+  simState = { team: null, round: 0, path: [], eliminated: false };
+  renderSimStart();
+}
+
+// ===== INIT =====
+loadMatches();
+updateCountdown();
+setInterval(updateCountdown, 60000);
+</script>
 </body>
 </html>

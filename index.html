@@ -451,21 +451,39 @@ function renderWCTeams() {
 }
 
 // ===== SIMULATEUR =====
-const SIM_ROUNDS = ['Phase de groupes', '8emes de finale', 'Quarts de finale', 'Demi-finale', 'FINALE'];
-let simState = { team: null, round: 0, path: [], eliminated: false };
+const SIM_ROUNDS = ['Groupe - Match 1', 'Groupe - Match 2', 'Groupe - Match 3', '8emes de finale', 'Quarts de finale', 'Demi-finale', 'FINALE'];
 
-function getOpponent(myTeam, round) {
+// Groupe de l'equipe choisie
+function getTeamGroup(teamName) {
+  for (const [groupName, teams] of Object.entries(WC_GROUPS)) {
+    if (teams.find(t => t.name === teamName)) {
+      return { groupName, teams };
+    }
+  }
+  return null;
+}
+
+function getGroupOpponents(teamName) {
+  const g = getTeamGroup(teamName);
+  if (!g) return [];
+  return g.teams.filter(t => t.name !== teamName);
+}
+
+function getKnockoutOpponent(myTeam, round) {
   const others = ALL_TEAMS.filter(t => t.name !== myTeam.name);
-  const sorted  = [...others].sort((a, b) => b.strength - a.strength);
-  const topN    = Math.ceil(sorted.length * (0.3 + round * 0.15));
-  const pool    = sorted.slice(0, Math.max(topN, 6));
+  const sorted = [...others].sort((a, b) => b.strength - a.strength);
+  const topN   = Math.ceil(sorted.length * (0.25 + (round - 3) * 0.15));
+  const pool   = sorted.slice(0, Math.max(topN, 6));
   return pool[Math.floor(Math.random() * pool.length)];
 }
+
+let simState = { team: null, round: 0, path: [], eliminated: false, groupOpponents: [] };
 
 function startSimWith(teamName) {
   const team = ALL_TEAMS.find(t => t.name === teamName);
   if (!team) return;
-  simState = { team, round: 0, path: [], eliminated: false };
+  const groupOpponents = getGroupOpponents(teamName);
+  simState = { team, round: 0, path: [], eliminated: false, groupOpponents };
   showTab('simulator');
 }
 
@@ -486,20 +504,38 @@ function renderSimStart() {
 function renderSimRound() {
   if (!simState.team) return;
   const container = document.getElementById('sim-container');
-  const { team, round, path } = simState;
-
+  const { team, round, path, groupOpponents } = simState;
   if (simState.eliminated || round >= SIM_ROUNDS.length) return;
 
-  const opponent  = getOpponent(team, round);
+  // Opponent : groupes pour rounds 0-1-2, tirage aleatoire apres
+  let opponent;
+  if (round <= 2) {
+    opponent = groupOpponents[round];
+  } else {
+    opponent = getKnockoutOpponent(team, round);
+  }
+
   const winProb   = Math.min(90, Math.max(20, Math.round(50 + (team.strength - opponent.strength) * 0.5)));
   const roundName = SIM_ROUNDS[round];
+  const isGroup   = round <= 2;
 
+  // Barre de progression
+  const stageLabels = ['Groupes', '8emes', 'Quarts', 'Demies', 'Finale'];
+  const stageIndex  = round <= 2 ? 0 : round - 2; // 0=groupes, 1=8e, 2=qf, 3=sf, 4=f
   let pathHtml = '<div class="path-tracker">';
-  SIM_ROUNDS.forEach((r, i) => {
-    const cls = i < round ? 'done' : i === round ? 'current' : '';
+  stageLabels.forEach((r, i) => {
+    const cls = i < stageIndex ? 'done' : i === stageIndex ? 'current' : '';
     pathHtml += `<div class="path-step ${cls}">${r}</div>`;
   });
+  // Indicateur match de groupe
+  if (isGroup) {
+    pathHtml += `<div style="margin-left:auto;font-size:10px;color:#ffc800;font-weight:700">Match ${round+1}/3</div>`;
+  }
   pathHtml += '</div>';
+
+  // Boutons — en phase de groupes on peut perdre sans etre elimine directement
+  const lossLabel = isGroup ? 'Defaite' : 'Elimine';
+  const lossNote  = isGroup ? `<div style="font-size:10px;color:#555;margin-top:8px">⚠️ Une defaite en poule n'elimine pas forcement</div>` : '';
 
   container.innerHTML = `
     ${pathHtml}
@@ -517,39 +553,93 @@ function renderSimRound() {
       <p style="font-size:12px;color:#888;margin-bottom:10px">Quel est le resultat ?</p>
       <div class="result-btns">
         <button class="result-btn win"  onclick="simChoose('win',  '${opponent.name}', '${opponent.flag}')">Victoire</button>
-        <button class="result-btn draw" onclick="simChoose('draw', '${opponent.name}', '${opponent.flag}')">Nuls/Pen.</button>
-        <button class="result-btn loss" onclick="simChoose('loss', '${opponent.name}', '${opponent.flag}')">Defaite</button>
+        <button class="result-btn draw" onclick="simChoose('draw', '${opponent.name}', '${opponent.flag}')">Nul/Pen.</button>
+        <button class="result-btn loss" onclick="simChoose('loss', '${opponent.name}', '${opponent.flag}')">${lossLabel}</button>
       </div>
+      ${lossNote}
     </div>`;
 }
 
 function simChoose(result, oppName, oppFlag) {
   const { team, round } = simState;
   const roundName = SIM_ROUNDS[round];
+  const isGroup   = round <= 2;
 
-  if (result === 'loss') {
+  // Defaite en phase de groupes = continue mais note la defaite
+  if (result === 'loss' && !isGroup) {
     simState.eliminated = true;
     document.getElementById('sim-container').innerHTML = `
       <div class="sim-result" style="border-color:rgba(255,80,80,0.3);background:linear-gradient(135deg,#2e0a0a,#1a0d0d)">
         <div class="trophy">😢</div>
         <div class="result-title" style="color:#ff6464">Elimine en ${roundName}</div>
         <div class="result-sub">${flagImg(team.flag)} ${team.name} sort de la competition</div>
+        <div class="path-summary" style="margin-top:16px;padding:12px;background:rgba(0,0,0,0.3);border-radius:10px;text-align:left">
+          ${simState.path.map(p => `
+            <div style="font-size:11px;color:#888;margin:4px 0;display:flex;align-items:center;gap:6px">
+              <span style="color:#555;min-width:140px">${p.round}</span>
+              ${flagImg(p.oppFlag)} ${p.opponent}
+              <span style="margin-left:auto;color:${p.result==='win'?'#00ff88':p.result==='draw'?'#ffc800':'#ff6464'}">${p.result==='win'?'Victoire':p.result==='draw'?'Nul/Pen.':'Defaite'}</span>
+            </div>`).join('')}
+        </div>
         <button class="restart-btn" style="color:#ff6464;border-color:rgba(255,80,80,0.3)" onclick="resetSim()">Rejouer</button>
       </div>`;
     return;
   }
 
-  simState.path.push({ round: roundName, opponent: `${oppName}`, oppFlag, result });
+  simState.path.push({ round: roundName, opponent: oppName, oppFlag, result });
   simState.round++;
 
+  // Apres les 3 matchs de groupes → verifier qualification
+  if (round === 2) {
+    const wins   = simState.path.filter(p => p.result === 'win').length;
+    const draws  = simState.path.filter(p => p.result === 'draw').length;
+    const losses = simState.path.filter(p => p.result === 'loss').length;
+
+    if (losses >= 2) {
+      // 2 defaites ou plus → elimination
+      simState.eliminated = true;
+      document.getElementById('sim-container').innerHTML = `
+        <div class="sim-result" style="border-color:rgba(255,80,80,0.3);background:linear-gradient(135deg,#2e0a0a,#1a0d0d)">
+          <div class="trophy">😢</div>
+          <div class="result-title" style="color:#ff6464">Elimine en phase de groupes</div>
+          <div class="result-sub">${wins}V ${draws}N ${losses}D — pas suffisant pour se qualifier</div>
+          <div class="path-summary" style="margin-top:16px;padding:12px;background:rgba(0,0,0,0.3);border-radius:10px;text-align:left">
+            ${simState.path.map(p => `
+              <div style="font-size:11px;color:#888;margin:4px 0;display:flex;align-items:center;gap:6px">
+                <span style="color:#555;min-width:140px">${p.round}</span>
+                ${flagImg(p.oppFlag)} ${p.opponent}
+                <span style="margin-left:auto;color:${p.result==='win'?'#00ff88':p.result==='draw'?'#ffc800':'#ff6464'}">${p.result==='win'?'Victoire':p.result==='draw'?'Nul/Pen.':'Defaite'}</span>
+              </div>`).join('')}
+          </div>
+          <button class="restart-btn" style="color:#ff6464;border-color:rgba(255,80,80,0.3)" onclick="resetSim()">Rejouer</button>
+        </div>`;
+      return;
+    }
+
+    // Qualifie — message de passage
+    const qualMsg = wins >= 2 ? '🔥 1er du groupe !' : wins === 1 ? '✅ Qualifie en 2e position' : '⚠️ Qualifie comme meilleur 3e';
+    // Petit recap avant les 8es
+    document.getElementById('sim-container').innerHTML = `
+      <div class="sim-step" style="text-align:center;padding:24px">
+        <div style="font-size:32px;margin-bottom:10px">✅</div>
+        <div style="font-size:16px;font-weight:900;color:#00ff88;margin-bottom:6px">Qualification !</div>
+        <div style="font-size:13px;color:#888">${qualMsg}</div>
+        <div style="font-size:12px;color:#555;margin-top:8px">${wins}V ${draws}N ${losses}D en phase de groupes</div>
+        <button onclick="continueToKnockout()" style="margin-top:20px;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:#00ff88;border-radius:10px;padding:12px 28px;font-size:13px;font-weight:700;cursor:pointer">
+          Continuer vers les 8emes →
+        </button>
+      </div>`;
+    return;
+  }
+
   if (simState.round >= SIM_ROUNDS.length) {
-    const pathSummary = simState.path.map(p =>
-      `<div style="font-size:11px;color:#888;margin:4px 0;display:flex;align-items:center;gap:6px">
-        <span style="color:#555;min-width:130px">${p.round}</span>
+    // CHAMPION !
+    const pathSummary = simState.path.map(p => `
+      <div style="font-size:11px;color:#888;margin:4px 0;display:flex;align-items:center;gap:6px">
+        <span style="color:#555;min-width:140px">${p.round}</span>
         ${flagImg(p.oppFlag)} ${p.opponent}
-        <span style="color:#00ff88;margin-left:auto">${p.result === 'win' ? 'Victoire' : 'Pen.'}</span>
-      </div>`
-    ).join('');
+        <span style="margin-left:auto;color:${p.result==='win'?'#00ff88':'#ffc800'}">${p.result==='win'?'Victoire':'Pen.'}</span>
+      </div>`).join('');
     document.getElementById('sim-container').innerHTML = `
       <div class="sim-result">
         <div class="trophy">🏆</div>
@@ -564,8 +654,12 @@ function simChoose(result, oppName, oppFlag) {
   renderSimRound();
 }
 
+function continueToKnockout() {
+  renderSimRound();
+}
+
 function resetSim() {
-  simState = { team: null, round: 0, path: [], eliminated: false };
+  simState = { team: null, round: 0, path: [], eliminated: false, groupOpponents: [] };
   renderSimStart();
 }
 

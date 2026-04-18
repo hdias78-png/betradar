@@ -1,19 +1,19 @@
 const API_KEY = "04b25e0b04144451abb6e47aed171ea4";
 const BASE_URL = "https://api.football-data.org/v4";
 
-const LEAGUES = {
-  PL:  { name: "Premier League",   id: 2021 },
-  FL1: { name: "Ligue 1",          id: 2015 },
-  BL1: { name: "Bundesliga",       id: 2002 },
-  PD:  { name: "La Liga",          id: 2014 },
-  PPL: { name: "Liga NOS",         id: 2017 },
-  SA:  { name: "Serie A",          id: 2019 },
-  CL:  { name: "Champions League", id: 2001 }
-};
+const LEAGUES = [
+  { name: "Premier League",   id: 2021, flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+  { name: "Ligue 1",          id: 2015, flag: "🇫🇷" },
+  { name: "Bundesliga",       id: 2002, flag: "🇩🇪" },
+  { name: "La Liga",          id: 2014, flag: "🇪🇸" },
+  { name: "Liga NOS",         id: 2017, flag: "🇵🇹" },
+  { name: "Serie A",          id: 2019, flag: "🇮🇹" }
+];
 
-const WC_TEAMS = [773, 760, 765, 759, 770, 762, 764, 1031, 907, 769, 768, 771];
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function apiGet(path) {
+  await sleep(400);
   const res = await fetch(`${BASE_URL}/${path}`, {
     headers: { "X-Auth-Token": API_KEY }
   });
@@ -21,89 +21,52 @@ async function apiGet(path) {
   return res.json();
 }
 
-async function getLastSixMatches(teamId) {
+async function getTeamForm(teamId) {
   const data = await apiGet(`teams/${teamId}/matches?status=FINISHED&limit=6`);
-  if (!data || !data.matches) return [];
-  return data.matches.slice(-6);
-}
+  if (!data?.matches?.length) return { form: [], goalsScored: 0, goalsConceded: 0, matchCount: 0 };
 
-function calcOver05Score(matches, teamId) {
-  if (!matches.length) return 0.5;
-  let scored = 0;
+  const matches = data.matches.slice(-6);
+  const form = [];
+  let goalsScored = 0;
+  let goalsConceded = 0;
+
   for (const m of matches) {
     const isHome = m.homeTeam.id === teamId;
-    const goals = isHome ? m.score.fullTime.home : m.score.fullTime.away;
-    if (goals > 0) scored++;
-  }
-  return scored / matches.length;
-}
-
-function calcMatchProbability(homeMatches, awayMatches, homeId, awayId) {
-  const homeScore = calcOver05Score(homeMatches, homeId);
-  const awayScore = calcOver05Score(awayMatches, awayId);
-  const prob = 1 - ((1 - homeScore) * (1 - awayScore));
-  return Math.round(prob * 100);
-}
-
-async function getTodayMatches() {
-  const today = new Date().toISOString().split("T")[0];
-
-  const leagueEntries = Object.entries(LEAGUES);
-  const leagueResults = await Promise.all(
-    leagueEntries.map(([code, league]) =>
-      apiGet(`competitions/${league.id}/matches?dateFrom=${today}&dateTo=${today}&status=SCHEDULED`)
-        .then(data => ({ code, league, matches: data?.matches || [] }))
-        .catch(() => ({ code, league, matches: [] }))
-    )
-  );
-
-  const allRawMatches = [];
-  for (const { code, league, matches } of leagueResults) {
-    for (const m of matches) {
-      allRawMatches.push({ ...m, leagueCode: code, leagueName: league.name });
-    }
+    const gF = isHome ? m.score.fullTime.home : m.score.fullTime.away;
+    const gA = isHome ? m.score.fullTime.away : m.score.fullTime.home;
+    goalsScored += gF;
+    goalsConceded += gA;
+    if (gF > gA) form.push("V");
+    else if (gF === gA) form.push("N");
+    else form.push("D");
   }
 
-  if (!allRawMatches.length) return [];
-
-  const scored = await Promise.all(
-    allRawMatches.map(async (m) => {
-      const [homeMatches, awayMatches] = await Promise.all([
-        getLastSixMatches(m.homeTeam.id),
-        getLastSixMatches(m.awayTeam.id)
-      ]);
-      const probability = calcMatchProbability(
-        homeMatches, awayMatches,
-        m.homeTeam.id, m.awayTeam.id
-      );
-      const homeScored = calcOver05Score(homeMatches, m.homeTeam.id);
-      const awayScored = calcOver05Score(awayMatches, m.awayTeam.id);
-      return {
-        id: m.id,
-        league: m.leagueName,
-        leagueCode: m.leagueCode,
-        utcDate: m.utcDate,
-        homeTeam: m.homeTeam.name,
-        awayTeam: m.awayTeam.name,
-        probability,
-        homeForm: `${Math.round(homeScored * 6)}/6`,
-        awayForm: `${Math.round(awayScored * 6)}/6`,
-        market: probability >= 90 ? "Over 0.5" : probability >= 75 ? "Over 1.5" : "Skip"
-      };
-    })
-  );
-
-  return scored
-    .filter(m => m.market !== "Skip")
-    .sort((a, b) => b.probability - a.probability)
-    .slice(0, 12);
+  return { form, goalsScored, goalsConceded, matchCount: matches.length };
 }
 
-function isWorldCupPeriod() {
-  const now = new Date();
-  const wcStart = new Date("2026-06-11");
-  const wcEnd = new Date("2026-07-19");
-  return now >= wcStart && now <= wcEnd;
+function calcPoissonUnder(lambda, maxGoals) {
+  let prob = 0;
+  let fact = 1;
+  for (let k = 0; k <= maxGoals; k++) {
+    if (k > 0) fact *= k;
+    prob += (Math.pow(lambda, k) * Math.exp(-lambda)) / fact;
+  }
+  return Math.min(99, Math.round(prob * 100));
+}
+
+function calcProbabilities(homeForm, awayForm) {
+  const homeAvg = homeForm.matchCount ? homeForm.goalsScored / homeForm.matchCount : 1.5;
+  const awayAvg = awayForm.matchCount ? awayForm.goalsScored / awayForm.matchCount : 1.2;
+  const totalAvg = homeAvg + awayAvg;
+
+  const over05 = Math.min(99, Math.round((1 - Math.exp(-totalAvg)) * 100));
+  const under35 = calcPoissonUnder(totalAvg, 3);
+
+  return { over05, under35 };
+}
+
+function formEmoji(form) {
+  return form.map(r => r === "V" ? "🟢" : r === "N" ? "🟡" : "🔴").join(" ");
 }
 
 exports.handler = async (event) => {
@@ -116,31 +79,61 @@ exports.handler = async (event) => {
     const data = await r.json();
     return {
       statusCode: r.status,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json"
-      },
+      headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
       body: JSON.stringify(data)
     };
   }
 
   try {
-    const worldCup = isWorldCupPeriod();
-    const matches = await getTodayMatches();
+    const today = new Date().toISOString().split("T")[0];
+    const results = [];
+
+    for (const league of LEAGUES) {
+      const data = await apiGet(
+        `competitions/${league.id}/matches?dateFrom=${today}&dateTo=${today}&status=SCHEDULED`
+      );
+      if (!data?.matches?.length) continue;
+
+      for (const m of data.matches.slice(0, 3)) {
+        const homeForm = await getTeamForm(m.homeTeam.id);
+        const awayForm = await getTeamForm(m.awayTeam.id);
+        const { over05, under35 } = calcProbabilities(homeForm, awayForm);
+
+        if (over05 < 80 && under35 < 80) continue;
+
+        results.push({
+          league: `${league.flag} ${league.name}`,
+          homeTeam: m.homeTeam.name,
+          awayTeam: m.awayTeam.name,
+          utcDate: m.utcDate,
+          home: {
+            form: homeForm.form,
+            formEmoji: formEmoji(homeForm.form),
+            goalsScored: homeForm.goalsScored,
+            goalsConceded: homeForm.goalsConceded
+          },
+          away: {
+            form: awayForm.form,
+            formEmoji: formEmoji(awayForm.form),
+            goalsScored: awayForm.goalsScored,
+            goalsConceded: awayForm.goalsConceded
+          },
+          over05,
+          under35,
+          over05Badge:  over05  >= 93 ? "🔥 SURE"  : over05  >= 85 ? "✅ BON" : "⚠️ OK",
+          under35Badge: under35 >= 90 ? "🔥 SURE"  : under35 >= 80 ? "✅ BON" : "⚠️ OK"
+        });
+      }
+    }
+
+    results.sort((a, b) => b.over05 - a.over05);
 
     return {
       statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        mode: worldCup ? "world_cup" : "leagues",
-        date: new Date().toISOString().split("T")[0],
-        totalFound: matches.length,
-        matches
-      })
+      headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+      body: JSON.stringify({ date: today, matches: results })
     };
+
   } catch (err) {
     return {
       statusCode: 500,

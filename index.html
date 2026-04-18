@@ -28,7 +28,7 @@ const WC_GROUPS = {
   "Groupe E": [
     { name: "Allemagne",      flag: "de", over05: 97, strength: 88 },
     { name: "Curacao",        flag: "cw", over05: 79, strength: 48 },
-    { name: "Cote d Ivoire",  flag: "ci", over05: 87, strength: 69 },
+    { name: "Cote Ivoire",    flag: "ci", over05: 87, strength: 69 },
     { name: "Equateur",       flag: "ec", over05: 84, strength: 64 }
   ],
   "Groupe F": [
@@ -69,9 +69,9 @@ const WC_GROUPS = {
   ],
   "Groupe L": [
     { name: "Angleterre",     flag: "gb-eng", over05: 95, strength: 87 },
-    { name: "Croatie",        flag: "hr", over05: 89, strength: 76 },
-    { name: "Ghana",          flag: "gh", over05: 84, strength: 62 },
-    { name: "Panama",         flag: "pa", over05: 80, strength: 53 }
+    { name: "Croatie",        flag: "hr",     over05: 89, strength: 76 },
+    { name: "Ghana",          flag: "gh",     over05: 84, strength: 62 },
+    { name: "Panama",         flag: "pa",     over05: 80, strength: 53 }
   ]
 };
 
@@ -94,6 +94,7 @@ function showTab(tab) {
 
 // ===== PARIS DU JOUR =====
 function formHtml(arr) {
+  if (!arr || !arr.length) return '-';
   return arr.map(r => r === "V" ? "🟢" : r === "N" ? "🟡" : "🔴").join(" ");
 }
 
@@ -137,27 +138,48 @@ function renderMatch(m) {
 async function loadMatches() {
   const container = document.getElementById('matches-container');
   const dateBadge = document.getElementById('date-badge');
+  if (!container) return;
+
   container.innerHTML = `
     <div class="loader">
       <div class="spinner"></div>
       Analyse des 6 championnats...<br>
       <small style="color:#333;margin-top:8px;display:block">10-15 secondes</small>
     </div>`;
+
   try {
     const res  = await fetch('/.netlify/functions/matches?path=smart-matches');
     const data = await res.json();
-    const d = new Date();
-    dateBadge.textContent = d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' });
-    if (!data.matches?.length) {
-      container.innerHTML = `<div class="empty-box"><div style="font-size:40px;margin-bottom:12px">😴</div>Aucun match fiable aujourd'hui</div>`;
+
+    if (dateBadge) {
+      dateBadge.textContent = new Date().toLocaleDateString('fr-FR', {
+        weekday: 'long', day: 'numeric', month: 'long'
+      });
+    }
+
+    if (!data.matches || !data.matches.length) {
+      container.innerHTML = `
+        <div class="empty-box">
+          <div style="font-size:40px;margin-bottom:12px">😴</div>
+          Aucun match fiable aujourd'hui<br>
+          <small style="color:#333">Reessaie ce soir</small>
+        </div>`;
       return;
     }
+
     const sure = data.matches.filter(m => m.over05 >= 93);
     const bon  = data.matches.filter(m => m.over05 >= 80 && m.over05 < 93);
     let html = '';
-    if (sure.length) { html += `<div class="section-title">🔥 Tres surs — Over 0.5</div>`; html += sure.map(renderMatch).join(''); }
-    if (bon.length)  { html += `<div class="section-title">✅ Bons paris</div>`;            html += bon.map(renderMatch).join(''); }
+    if (sure.length) {
+      html += `<div class="section-title">🔥 Tres surs — Over 0.5</div>`;
+      html += sure.map(renderMatch).join('');
+    }
+    if (bon.length) {
+      html += `<div class="section-title">✅ Bons paris</div>`;
+      html += bon.map(renderMatch).join('');
+    }
     container.innerHTML = html;
+
   } catch (err) {
     container.innerHTML = `
       <div class="error-box">
@@ -170,9 +192,9 @@ async function loadMatches() {
 
 // ===== COUNTDOWN =====
 function updateCountdown() {
-  const diff = new Date('2026-06-11T00:00:00') - new Date();
   const el   = document.getElementById('wc-countdown');
   if (!el) return;
+  const diff = new Date('2026-06-11T00:00:00') - new Date();
   if (diff <= 0) { el.textContent = 'Tournoi en cours !'; return; }
   const days  = Math.floor(diff / 86400000);
   const hours = Math.floor((diff % 86400000) / 3600000);
@@ -182,7 +204,7 @@ function updateCountdown() {
 // ===== EQUIPES CdM =====
 function renderWCTeams() {
   const container = document.getElementById('wc-teams-container');
-  if (container.innerHTML) return;
+  if (!container || container.innerHTML) return;
   let html = '';
   for (const [group, teams] of Object.entries(WC_GROUPS)) {
     html += `<div class="group-title">${group}</div><div class="team-grid">`;
@@ -213,15 +235,11 @@ const SIM_ROUNDS = [
   'Demi-finale',
   'FINALE'
 ];
-
 const STAGE_LABELS = ['Groupes', '8emes', 'Quarts', 'Demies', 'Finale'];
 
 let simState = {
-  team: null,
-  round: 0,
-  path: [],
-  eliminated: false,
-  groupOpponents: []
+  team: null, round: 0, path: [],
+  eliminated: false, groupOpponents: []
 };
 
 function getGroupOpponents(teamName) {
@@ -234,17 +252,12 @@ function getGroupOpponents(teamName) {
 }
 
 function getKnockoutOpponent(myTeam, round) {
-  // Exclure l'equipe elle-meme ET tous les adversaires deja rencontres
   const alreadyPlayed = new Set(simState.path.map(p => p.opponent));
   alreadyPlayed.add(myTeam.name);
-
   const others = ALL_TEAMS.filter(t => !alreadyPlayed.has(t.name));
   const sorted = [...others].sort((a, b) => b.strength - a.strength);
-
-  // Plus on avance, plus les adversaires sont forts
-  const topN = Math.ceil(sorted.length * (0.25 + (round - 3) * 0.12));
-  const pool = sorted.slice(0, Math.max(topN, 5));
-
+  const topN   = Math.ceil(sorted.length * (0.25 + (round - 3) * 0.12));
+  const pool   = sorted.slice(0, Math.max(topN, 5));
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
@@ -261,8 +274,40 @@ function startSimWith(teamName) {
   showTab('simulator');
 }
 
+function getPathLabel(result, roundIndex) {
+  if (result === 'win')  return '<span style="color:#00ff88">Victoire</span>';
+  if (result === 'loss') return '<span style="color:#ff6464">Defaite</span>';
+  return roundIndex <= 2
+    ? '<span style="color:#ffc800">Nul</span>'
+    : '<span style="color:#ffc800">Pen.</span>';
+}
+
+function buildPathSummary() {
+  return simState.path.map((p, i) => `
+    <div style="font-size:11px;color:#888;margin:5px 0;display:flex;align-items:center;gap:6px">
+      <span style="color:#555;min-width:145px;font-size:10px">${p.round}</span>
+      ${flagImg(p.oppFlag)} ${p.opponent}
+      <span style="margin-left:auto">${getPathLabel(p.result, i)}</span>
+    </div>`).join('');
+}
+
+function showEliminated(roundName) {
+  const { team } = simState;
+  const c = document.getElementById('sim-container');
+  if (!c) return;
+  c.innerHTML = `
+    <div class="sim-result" style="border-color:rgba(255,80,80,0.3);background:linear-gradient(135deg,#2e0a0a,#1a0d0d)">
+      <div class="trophy">😢</div>
+      <div class="result-title" style="color:#ff6464">Elimine — ${roundName}</div>
+      <div class="result-sub">${flagImg(team.flag)} ${team.name} sort de la competition</div>
+      <div class="path-summary">${buildPathSummary()}</div>
+      <button class="restart-btn" style="color:#ff6464;border-color:rgba(255,80,80,0.3)" onclick="resetSim()">Rejouer</button>
+    </div>`;
+}
+
 function renderSimStart() {
   const container = document.getElementById('sim-container');
+  if (!container) return;
   if (simState.team && !simState.eliminated) { renderSimRound(); return; }
   let html = `<p style="font-size:12px;color:#555;margin-bottom:16px">Choisis ton equipe :</p><div class="team-select-grid">`;
   for (const t of ALL_TEAMS) {
@@ -276,56 +321,25 @@ function renderSimStart() {
   container.innerHTML = html;
 }
 
-function getPathLabel(p, index) {
-  const isGroupRound = index <= 2;
-  if (p.result === 'win')  return '<span style="color:#00ff88">Victoire</span>';
-  if (p.result === 'loss') return '<span style="color:#ff6464">Defaite</span>';
-  // draw
-  return isGroupRound
-    ? '<span style="color:#ffc800">Nul</span>'
-    : '<span style="color:#ffc800">Pen.</span>';
-}
-
-function buildPathSummary() {
-  return simState.path.map((p, i) => `
-    <div style="font-size:11px;color:#888;margin:5px 0;display:flex;align-items:center;gap:6px">
-      <span style="color:#555;min-width:145px;font-size:10px">${p.round}</span>
-      ${flagImg(p.oppFlag)} ${p.opponent}
-      <span style="margin-left:auto">${getPathLabel(p, i)}</span>
-    </div>`).join('');
-}
-
-function showEliminated(roundName) {
-  const { team } = simState;
-  document.getElementById('sim-container').innerHTML = `
-    <div class="sim-result" style="border-color:rgba(255,80,80,0.3);background:linear-gradient(135deg,#2e0a0a,#1a0d0d)">
-      <div class="trophy">😢</div>
-      <div class="result-title" style="color:#ff6464">Elimine — ${roundName}</div>
-      <div class="result-sub">${flagImg(team.flag)} ${team.name} sort de la competition</div>
-      <div class="path-summary">${buildPathSummary()}</div>
-      <button class="restart-btn" style="color:#ff6464;border-color:rgba(255,80,80,0.3)" onclick="resetSim()">Rejouer</button>
-    </div>`;
-}
-
 function renderSimRound() {
-  if (!simState.team || simState.eliminated || simState.round >= SIM_ROUNDS.length) return;
-
   const container = document.getElementById('sim-container');
+  if (!container || !simState.team || simState.eliminated || simState.round >= SIM_ROUNDS.length) return;
+
   const { team, round, groupOpponents } = simState;
   const isGroup   = round <= 2;
   const roundName = SIM_ROUNDS[round];
-
-  // Choix adversaire
   const opponent  = isGroup ? groupOpponents[round] : getKnockoutOpponent(team, round);
   const winProb   = Math.min(90, Math.max(15, Math.round(50 + (team.strength - opponent.strength) * 0.5)));
-
-  // Barre de progression
   const stageIndex = isGroup ? 0 : round - 2;
+
   let pathHtml = '<div class="path-tracker">';
   STAGE_LABELS.forEach((r, i) => {
     const cls = i < stageIndex ? 'done' : i === stageIndex ? 'current' : '';
     pathHtml += `<div class="path-step ${cls}">${r}</div>`;
   });
+  if (isGroup) {
+    pathHtml += `<span style="margin-left:auto;font-size:10px;color:#ffc800;font-weight:700;align-self:center">Match ${round+1}/3</span>`;
+  }
   pathHtml += '</div>';
 
   const drawLabel = isGroup ? 'Nul' : 'Pen. (apres nul)';
@@ -337,12 +351,12 @@ function renderSimRound() {
     ${pathHtml}
     <div class="sim-step">
       <div class="step-label">${roundName}</div>
-      <div class="step-match" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div class="step-match" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         ${flagImg(team.flag)} <strong>${team.name}</strong>
         <span style="color:#444">vs</span>
         ${flagImg(opponent.flag)} <strong>${opponent.name}</strong>
       </div>
-      <div style="font-size:11px;color:#555;margin:8px 0 4px">
+      <div style="font-size:11px;color:#555;margin-bottom:4px">
         Force ${team.strength}/100 vs ${opponent.strength}/100
       </div>
       <div style="font-size:13px;color:#00ff88;font-weight:700;margin-bottom:14px">
@@ -363,10 +377,8 @@ function simChoose(result, oppName, oppFlag) {
   const isGroup   = round <= 2;
   const roundName = SIM_ROUNDS[round];
 
-  // Enregistrer le resultat
   simState.path.push({ round: roundName, opponent: oppName, oppFlag, result });
 
-  // Defaite en phase elimination directe = sorti
   if (result === 'loss' && !isGroup) {
     simState.eliminated = true;
     showEliminated(roundName);
@@ -375,7 +387,6 @@ function simChoose(result, oppName, oppFlag) {
 
   simState.round++;
 
-  // Fin des 3 matchs de groupes → verifier qualification
   if (round === 2) {
     const losses = simState.path.filter(p => p.result === 'loss').length;
     const wins   = simState.path.filter(p => p.result === 'win').length;
@@ -383,7 +394,9 @@ function simChoose(result, oppName, oppFlag) {
 
     if (losses >= 2) {
       simState.eliminated = true;
-      document.getElementById('sim-container').innerHTML = `
+      const c = document.getElementById('sim-container');
+      if (!c) return;
+      c.innerHTML = `
         <div class="sim-result" style="border-color:rgba(255,80,80,0.3);background:linear-gradient(135deg,#2e0a0a,#1a0d0d)">
           <div class="trophy">😢</div>
           <div class="result-title" style="color:#ff6464">Elimine en phase de groupes</div>
@@ -399,7 +412,9 @@ function simChoose(result, oppName, oppFlag) {
                   : wins === 1 ? '⚠️ Qualifie comme meilleur 3e'
                   : '⚠️ Qualifie de justesse';
 
-    document.getElementById('sim-container').innerHTML = `
+    const c = document.getElementById('sim-container');
+    if (!c) return;
+    c.innerHTML = `
       <div class="sim-step" style="text-align:center;padding:28px">
         <div style="font-size:36px;margin-bottom:12px">✅</div>
         <div style="font-size:17px;font-weight:900;color:#00ff88;margin-bottom:8px">Qualification !</div>
@@ -415,9 +430,10 @@ function simChoose(result, oppName, oppFlag) {
     return;
   }
 
-  // Champion du monde !
   if (simState.round >= SIM_ROUNDS.length) {
-    document.getElementById('sim-container').innerHTML = `
+    const c = document.getElementById('sim-container');
+    if (!c) return;
+    c.innerHTML = `
       <div class="sim-result">
         <div class="trophy">🏆</div>
         <div class="result-title">CHAMPION DU MONDE !</div>
@@ -440,8 +456,10 @@ function resetSim() {
   renderSimStart();
 }
 
-// ===== INIT =====
-loadMatches();
-updateCountdown();
-setInterval(updateCountdown, 60000);
+// ===== INIT — attend que le HTML soit pret =====
+document.addEventListener('DOMContentLoaded', () => {
+  loadMatches();
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+});
 </script>

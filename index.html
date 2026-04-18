@@ -17,7 +17,6 @@
       padding-bottom: 60px;
     }
 
-    /* ===== HEADER ===== */
     header {
       background: linear-gradient(135deg, #0d0d1a, #1a1a3e);
       border-bottom: 1px solid rgba(0,255,136,0.15);
@@ -39,53 +38,40 @@
       font-size: 11px;
       color: #00ff88;
       margin-top: 10px;
-      letter-spacing: 1px;
     }
 
-    /* ===== TABS ===== */
     .tabs {
       display: flex;
       background: #111122;
       border-bottom: 1px solid rgba(255,255,255,0.06);
-      overflow-x: auto;
     }
     .tab {
       flex: 1;
-      min-width: 80px;
-      padding: 12px 8px;
+      padding: 12px 6px;
       text-align: center;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
       color: #444;
       cursor: pointer;
       border-bottom: 2px solid transparent;
-      white-space: nowrap;
       transition: all 0.2s;
     }
     .tab.active { color: #00ff88; border-bottom-color: #00ff88; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* ===== CONTAINER ===== */
     .container { max-width: 480px; margin: 0 auto; padding: 16px; }
 
-    /* ===== SECTION TITLE ===== */
     .section-title {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #00ff88;
+      font-size: 12px; font-weight: 800; letter-spacing: 2px;
+      text-transform: uppercase; color: #00ff88;
       margin: 24px 0 12px 2px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 8px;
     }
     .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(0,255,136,0.15); }
 
-    /* ===== MATCH CARD ===== */
     .match-card {
       background: linear-gradient(135deg, #1a1a2e, #16213e);
       border: 1px solid rgba(255,255,255,0.07);
@@ -116,7 +102,6 @@
     .stat-pill .badge { font-size: 10px; margin-top: 4px; color: #888; }
     .match-time { font-size: 10px; color: #444; text-align: right; margin-top: 10px; }
 
-    /* ===== LOADER / ERROR ===== */
     .loader { text-align: center; padding: 60px 20px; color: #555; font-size: 13px; }
     .spinner { width: 36px; height: 36px; border: 3px solid rgba(0,255,136,0.1); border-top-color: #00ff88; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -126,14 +111,11 @@
     .refresh-btn { display: block; width: 100%; margin-top: 24px; background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); color: #00ff88; border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 700; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; }
     .refresh-btn:hover { background: rgba(0,255,136,0.15); }
 
-    /* ===== COUPE DU MONDE ===== */
+    /* COUPE DU MONDE */
     .wc-banner {
       background: linear-gradient(135deg, #1a0a2e, #2e1a0a);
       border: 1px solid rgba(255,180,0,0.3);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 20px;
+      border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px;
     }
     .wc-banner .wc-title { font-size: 20px; font-weight: 900; color: #ffc800; letter-spacing: 2px; }
     .wc-banner .wc-subtitle { font-size: 11px; color: #888; margin-top: 4px; }
@@ -148,76 +130,32 @@
 
     .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
     .team-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 12px;
-      padding: 10px 12px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 10px 12px;
       display: flex; align-items: center; gap: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
+      cursor: pointer; transition: all 0.2s;
     }
     .team-card:hover { border-color: rgba(255,200,0,0.4); background: rgba(255,200,0,0.05); }
-    .team-card.selected { border-color: #ffc800; background: rgba(255,200,0,0.1); }
     .team-card .team-flag { font-size: 20px; }
     .team-card .team-info { flex: 1; }
     .team-card .team-name-wc { font-size: 12px; font-weight: 700; color: #fff; }
-    .team-card .team-odds { font-size: 10px; color: #888; margin-top: 2px; }
-    .team-card .over05-badge {
+    .team-card .team-strength { font-size: 10px; color: #888; margin-top: 2px; }
+    .over05-badge {
       font-size: 10px; font-weight: 700; padding: 2px 7px;
-      border-radius: 6px; background: rgba(0,255,136,0.1);
-      color: #00ff88; border: 1px solid rgba(0,255,136,0.2);
+      border-radius: 6px; white-space: nowrap;
     }
+    .over05-badge.sure { background: rgba(0,255,136,0.1); color: #00ff88; border: 1px solid rgba(0,255,136,0.2); }
+    .over05-badge.bon  { background: rgba(255,200,0,0.1); color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+    .over05-badge.ok   { background: rgba(255,100,100,0.1); color: #ff6464; border: 1px solid rgba(255,100,100,0.2); }
 
-    /* ===== SIMULATEUR ===== */
+    /* SIMULATEUR */
     .sim-banner {
       background: linear-gradient(135deg, #0a1a2e, #0a2e1a);
       border: 1px solid rgba(0,200,255,0.3);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 20px;
+      border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px;
     }
     .sim-banner .sim-title { font-size: 20px; font-weight: 900; color: #00c8ff; letter-spacing: 2px; }
     .sim-banner .sim-sub { font-size: 11px; color: #888; margin-top: 4px; }
-
-    .sim-step {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 12px;
-    }
-    .sim-step .step-label { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #00c8ff; margin-bottom: 10px; }
-    .sim-step .step-match { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 12px; }
-
-    .result-btns { display: flex; gap: 8px; }
-    .result-btn {
-      flex: 1; padding: 10px 6px; border-radius: 10px; border: none;
-      font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s;
-      letter-spacing: 1px; text-transform: uppercase;
-    }
-    .result-btn.win  { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
-    .result-btn.draw { background: rgba(255,200,0,0.1);  color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
-    .result-btn.loss { background: rgba(255,80,80,0.1);  color: #ff6464; border: 1px solid rgba(255,80,80,0.3); }
-    .result-btn:hover { transform: scale(1.03); }
-    .result-btn.chosen { opacity: 1; transform: scale(1.05); }
-    .result-btn:not(.chosen) { opacity: 0.4; }
-
-    .sim-result {
-      background: linear-gradient(135deg, #1a2e1a, #0d1a0d);
-      border: 1px solid rgba(0,255,136,0.3);
-      border-radius: 14px;
-      padding: 20px;
-      text-align: center;
-      margin-top: 16px;
-    }
-    .sim-result .trophy { font-size: 48px; margin-bottom: 8px; }
-    .sim-result .result-title { font-size: 18px; font-weight: 900; color: #00ff88; }
-    .sim-result .result-sub { font-size: 12px; color: #888; margin-top: 6px; }
-    .sim-result .restart-btn {
-      margin-top: 16px; background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3);
-      color: #00ff88; border-radius: 10px; padding: 10px 24px; font-size: 13px; font-weight: 700; cursor: pointer;
-    }
 
     .team-select-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .team-select-btn {
@@ -228,15 +166,39 @@
     .team-select-btn .flag { font-size: 22px; }
     .team-select-btn .name { font-size: 10px; color: #ccc; font-weight: 700; margin-top: 4px; }
 
-    .path-tracker {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;
+    .path-tracker { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .path-step { background: rgba(0,200,255,0.05); border: 1px solid rgba(0,200,255,0.15); border-radius: 8px; padding: 4px 10px; font-size: 10px; color: #555; font-weight: 700; }
+    .path-step.done    { background: rgba(0,255,136,0.08); border-color: rgba(0,255,136,0.2); color: #00ff88; }
+    .path-step.current { background: rgba(0,200,255,0.15); border-color: #00c8ff; color: #00c8ff; }
+
+    .sim-step {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; padding: 16px; margin-bottom: 12px;
     }
-    .path-step {
-      background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.2);
-      border-radius: 8px; padding: 4px 10px; font-size: 10px; color: #00c8ff; font-weight: 700;
+    .sim-step .step-label { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #00c8ff; margin-bottom: 10px; }
+    .sim-step .step-match { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+
+    .result-btns { display: flex; gap: 8px; margin-top: 12px; }
+    .result-btn {
+      flex: 1; padding: 10px 6px; border-radius: 10px; border: none;
+      font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+      letter-spacing: 1px; text-transform: uppercase;
     }
-    .path-step.done { background: rgba(0,255,136,0.08); border-color: rgba(0,255,136,0.2); color: #00ff88; }
-    .path-step.current { background: rgba(0,200,255,0.2); border-color: #00c8ff; }
+    .result-btn.win  { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
+    .result-btn.draw { background: rgba(255,200,0,0.1);  color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+    .result-btn.loss { background: rgba(255,80,80,0.1);  color: #ff6464; border: 1px solid rgba(255,80,80,0.3); }
+    .result-btn:hover { transform: scale(1.03); }
+
+    .sim-result {
+      background: linear-gradient(135deg, #1a2e1a, #0d1a0d);
+      border: 1px solid rgba(0,255,136,0.3);
+      border-radius: 14px; padding: 24px; text-align: center; margin-top: 8px;
+    }
+    .sim-result .trophy { font-size: 52px; margin-bottom: 10px; }
+    .sim-result .result-title { font-size: 18px; font-weight: 900; color: #00ff88; }
+    .sim-result .result-sub { font-size: 12px; color: #888; margin-top: 6px; }
+    .sim-result .path-summary { margin-top: 16px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: left; }
+    .sim-result .restart-btn { margin-top: 16px; background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3); color: #00ff88; border-radius: 10px; padding: 10px 24px; font-size: 13px; font-weight: 700; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -247,14 +209,13 @@
   <div class="date-badge" id="date-badge">Chargement...</div>
 </header>
 
-<!-- TABS -->
 <div class="tabs">
-  <div class="tab active" onclick="showTab('paris')">Paris du jour</div>
-  <div class="tab" onclick="showTab('worldcup')">Coupe du Monde</div>
-  <div class="tab" onclick="showTab('simulator')">Simulateur</div>
+  <div class="tab active"  onclick="showTab('paris')">Paris du jour</div>
+  <div class="tab"         onclick="showTab('worldcup')">Coupe du Monde</div>
+  <div class="tab"         onclick="showTab('simulator')">Simulateur</div>
 </div>
 
-<!-- ===== TAB 1 : PARIS DU JOUR ===== -->
+<!-- TAB 1 : PARIS DU JOUR -->
 <div id="tab-paris" class="tab-content active">
   <div class="container">
     <div id="matches-container">
@@ -268,114 +229,137 @@
   </div>
 </div>
 
-<!-- ===== TAB 2 : COUPE DU MONDE ===== -->
+<!-- TAB 2 : COUPE DU MONDE -->
 <div id="tab-worldcup" class="tab-content">
   <div class="container">
     <div class="wc-banner">
       <div class="wc-title">COUPE DU MONDE 2026</div>
-      <div class="wc-subtitle">USA / Canada / Mexique</div>
+      <div class="wc-subtitle">USA / Canada / Mexique — 11 juin au 19 juillet</div>
       <div class="wc-countdown" id="wc-countdown">Calcul...</div>
     </div>
-
-    <div class="section-title">Paris recommandes — Phase de groupes</div>
-    <p style="font-size:12px;color:#555;margin-bottom:16px;line-height:1.6">
-      Statistiques basees sur les 6 derniers matchs officiels de chaque equipe (qualifications + Nations League). 
-      Clique sur une equipe pour la simuler dans l'onglet Simulateur.
+    <p style="font-size:12px;color:#555;margin-bottom:16px;line-height:1.7">
+      Clique sur une equipe pour lancer la simulation de son parcours.
     </p>
-
     <div id="wc-teams-container"></div>
   </div>
 </div>
 
-<!-- ===== TAB 3 : SIMULATEUR ===== -->
+<!-- TAB 3 : SIMULATEUR -->
 <div id="tab-simulator" class="tab-content">
   <div class="container">
     <div class="sim-banner">
       <div class="sim-title">SIMULATEUR CdM 2026</div>
-      <div class="sim-sub">Choisis ton equipe et simule ton parcours jusqu'a la finale</div>
+      <div class="sim-sub">Choisis ton equipe et simule jusqu'a la finale</div>
     </div>
     <div id="sim-container"></div>
   </div>
 </div>
 
 <script>
-// ===== DONNEES COUPE DU MONDE 2026 =====
+// ===== VRAIS GROUPES OFFICIELS CdM 2026 =====
 const WC_GROUPS = {
   "Groupe A": [
-    { name: "USA",       flag: "🇺🇸", over05: 94, strength: 78 },
-    { name: "Serbie",    flag: "🇷🇸", over05: 89, strength: 72 },
-    { name: "Uruguay",   flag: "🇺🇾", over05: 91, strength: 75 },
-    { name: "Panama",    flag: "🇵🇦", over05: 82, strength: 58 }
+    { name: "Mexique",        flag: "MX", over05: 93, strength: 76 },
+    { name: "Afr. du Sud",    flag: "ZA", over05: 83, strength: 58 },
+    { name: "Coree du Sud",   flag: "KR", over05: 90, strength: 75 },
+    { name: "Tcheque",        flag: "CZ", over05: 87, strength: 68 }
   ],
   "Groupe B": [
-    { name: "Mexique",   flag: "🇲🇽", over05: 93, strength: 76 },
-    { name: "Belgique",  flag: "🇧🇪", over05: 95, strength: 82 },
-    { name: "Maroc",     flag: "🇲🇦", over05: 90, strength: 79 },
-    { name: "Cameroun",  flag: "🇨🇲", over05: 85, strength: 62 }
+    { name: "Canada",         flag: "CA", over05: 88, strength: 74 },
+    { name: "Bosnie",         flag: "BA", over05: 86, strength: 67 },
+    { name: "Qatar",          flag: "QA", over05: 82, strength: 60 },
+    { name: "Suisse",         flag: "CH", over05: 88, strength: 73 }
   ],
   "Groupe C": [
-    { name: "Allemagne", flag: "🇩🇪", over05: 97, strength: 88 },
-    { name: "Japon",     flag: "🇯🇵", over05: 92, strength: 80 },
-    { name: "Australie", flag: "🇦🇺", over05: 86, strength: 65 },
-    { name: "Costa Rica",flag: "🇨🇷", over05: 80, strength: 55 }
+    { name: "Bresil",         flag: "BR", over05: 96, strength: 89 },
+    { name: "Maroc",          flag: "MA", over05: 90, strength: 79 },
+    { name: "Haiti",          flag: "HT", over05: 80, strength: 50 },
+    { name: "Ecosse",         flag: "SC", over05: 87, strength: 68 }
   ],
   "Groupe D": [
-    { name: "Espagne",   flag: "🇪🇸", over05: 98, strength: 92 },
-    { name: "Croatie",   flag: "🇭🇷", over05: 91, strength: 78 },
-    { name: "Bresil",    flag: "🇧🇷", over05: 96, strength: 89 },
-    { name: "Algerie",   flag: "🇩🇿", over05: 87, strength: 68 }
+    { name: "USA",            flag: "US", over05: 91, strength: 78 },
+    { name: "Paraguay",       flag: "PY", over05: 85, strength: 63 },
+    { name: "Australie",      flag: "AU", over05: 84, strength: 64 },
+    { name: "Turquie",        flag: "TR", over05: 91, strength: 77 }
   ],
   "Groupe E": [
-    { name: "France",    flag: "🇫🇷", over05: 97, strength: 91 },
-    { name: "Argentine", flag: "🇦🇷", over05: 96, strength: 93 },
-    { name: "Pologne",   flag: "🇵🇱", over05: 88, strength: 70 },
-    { name: "Senegal",   flag: "🇸🇳", over05: 87, strength: 71 }
+    { name: "Allemagne",      flag: "DE", over05: 97, strength: 88 },
+    { name: "Curacao",        flag: "CW", over05: 79, strength: 48 },
+    { name: "Cote d'Ivoire",  flag: "CI", over05: 87, strength: 69 },
+    { name: "Equateur",       flag: "EC", over05: 84, strength: 64 }
   ],
   "Groupe F": [
-    { name: "Angleterre",flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", over05: 95, strength: 87 },
-    { name: "Portugal",  flag: "🇵🇹", over05: 96, strength: 88 },
-    { name: "Colombie",  flag: "🇨🇴", over05: 90, strength: 77 },
-    { name: "Pays-Bas",  flag: "🇳🇱", over05: 94, strength: 85 }
+    { name: "Pays-Bas",       flag: "NL", over05: 94, strength: 85 },
+    { name: "Japon",          flag: "JP", over05: 92, strength: 80 },
+    { name: "Suede",          flag: "SE", over05: 87, strength: 69 },
+    { name: "Tunisie",        flag: "TN", over05: 83, strength: 61 }
   ],
   "Groupe G": [
-    { name: "Italie",    flag: "🇮🇹", over05: 89, strength: 80 },
-    { name: "Suisse",    flag: "🇨🇭", over05: 88, strength: 74 },
-    { name: "Coree Sud", flag: "🇰🇷", over05: 90, strength: 76 },
-    { name: "Equateur",  flag: "🇪🇨", over05: 84, strength: 64 }
+    { name: "Belgique",       flag: "BE", over05: 94, strength: 82 },
+    { name: "Iran",           flag: "IR", over05: 83, strength: 63 },
+    { name: "Egypte",         flag: "EG", over05: 85, strength: 65 },
+    { name: "Nvelle-Zelande", flag: "NZ", over05: 80, strength: 52 }
   ],
   "Groupe H": [
-    { name: "Canada",    flag: "🇨🇦", over05: 88, strength: 74 },
-    { name: "Turquie",   flag: "🇹🇷", over05: 91, strength: 77 },
-    { name: "Ghana",     flag: "🇬🇭", over05: 85, strength: 63 },
-    { name: "Autriche",  flag: "🇦🇹", over05: 89, strength: 72 }
+    { name: "Espagne",        flag: "ES", over05: 98, strength: 92 },
+    { name: "Uruguay",        flag: "UY", over05: 91, strength: 76 },
+    { name: "Arabie Saoudite",flag: "SA", over05: 82, strength: 60 },
+    { name: "Cap-Vert",       flag: "CV", over05: 81, strength: 57 }
+  ],
+  "Groupe I": [
+    { name: "France",         flag: "FR", over05: 97, strength: 91 },
+    { name: "Senegal",        flag: "SN", over05: 87, strength: 71 },
+    { name: "Norvege",        flag: "NO", over05: 91, strength: 78 },
+    { name: "Irak",           flag: "IQ", over05: 80, strength: 54 }
+  ],
+  "Groupe J": [
+    { name: "Argentine",      flag: "AR", over05: 96, strength: 93 },
+    { name: "Algerie",        flag: "DZ", over05: 87, strength: 68 },
+    { name: "Autriche",       flag: "AT", over05: 89, strength: 72 },
+    { name: "Jordanie",       flag: "JO", over05: 79, strength: 52 }
+  ],
+  "Groupe K": [
+    { name: "Portugal",       flag: "PT", over05: 96, strength: 88 },
+    { name: "RD Congo",       flag: "CD", over05: 82, strength: 59 },
+    { name: "Ouzbekistan",    flag: "UZ", over05: 83, strength: 60 },
+    { name: "Colombie",       flag: "CO", over05: 90, strength: 77 }
+  ],
+  "Groupe L": [
+    { name: "Angleterre",     flag: "GB-ENG", over05: 95, strength: 87 },
+    { name: "Croatie",        flag: "HR", over05: 89, strength: 76 },
+    { name: "Ghana",          flag: "GH", over05: 84, strength: 62 },
+    { name: "Panama",         flag: "PA", over05: 80, strength: 53 }
   ]
 };
 
-// Aplatir toutes les equipes
+// Drapeaux via twemoji/flagcdn
+function flagImg(code) {
+  const c = code.toLowerCase();
+  return `<img src="https://flagcdn.com/32x24/${c}.png" style="width:24px;height:18px;border-radius:3px;object-fit:cover" onerror="this.style.display='none'">`;
+}
+
 const ALL_TEAMS = Object.values(WC_GROUPS).flat();
 
 // ===== TABS =====
 function showTab(tab) {
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    const ids = ['paris','worldcup','simulator'];
-    t.classList.toggle('active', ids[i] === tab);
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['paris','worldcup','simulator'][i] === tab);
   });
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-
-  if (tab === 'worldcup') renderWCTeams();
+  if (tab === 'worldcup')  renderWCTeams();
   if (tab === 'simulator') renderSimStart();
 }
 
 // ===== PARIS DU JOUR =====
-function renderMatch(m) {
-  const time = new Date(m.utcDate).toLocaleTimeString('fr-FR', {
-    hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris'
-  });
-  const over05Class  = m.over05  >= 93 ? 'sure' : m.over05  >= 85 ? 'bon' : 'ok';
-  const under35Class = m.under35 >= 90 ? 'sure' : m.under35 >= 80 ? 'bon' : 'ok';
-  const formHtml = arr => arr.map(r => r === "V" ? "🟢" : r === "N" ? "🟡" : "🔴").join(" ");
+function formHtml(arr) {
+  return arr.map(r => r === "V" ? "🟢" : r === "N" ? "🟡" : "🔴").join(" ");
+}
 
+function renderMatch(m) {
+  const time = new Date(m.utcDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' });
+  const o = m.over05  >= 93 ? 'sure' : m.over05  >= 85 ? 'bon' : 'ok';
+  const u = m.under35 >= 90 ? 'sure' : m.under35 >= 80 ? 'bon' : 'ok';
   return `
     <div class="match-card">
       <div class="league">${m.league}</div>
@@ -392,12 +376,12 @@ function renderMatch(m) {
       </div>
       <div class="divider"></div>
       <div class="stats">
-        <div class="stat-pill ${over05Class}">
+        <div class="stat-pill ${o}">
           <div class="label">Over 0.5</div>
           <div class="value">${m.over05}%</div>
           <div class="badge">${m.over05Badge}</div>
         </div>
-        <div class="stat-pill ${under35Class}">
+        <div class="stat-pill ${u}">
           <div class="label">Under 3.5</div>
           <div class="value">${m.under35}%</div>
           <div class="badge">${m.under35Badge}</div>
@@ -417,7 +401,7 @@ async function loadMatches() {
     const d = new Date();
     dateBadge.textContent = d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' });
     if (!data.matches?.length) {
-      container.innerHTML = `<div class="empty-box"><div style="font-size:40px;margin-bottom:12px">😴</div>Aucun match fiable aujourd'hui</div>`;
+      container.innerHTML = `<div class="empty-box"><div style="font-size:40px;margin-bottom:12px">😴</div>Aucun match fiable aujourd'hui<br><small style="color:#333">Reessaie ce soir</small></div>`;
       return;
     }
     const sure = data.matches.filter(m => m.over05 >= 93);
@@ -431,37 +415,34 @@ async function loadMatches() {
   }
 }
 
-// ===== COUNTDOWN CdM =====
+// ===== COUNTDOWN =====
 function updateCountdown() {
-  const wc = new Date('2026-06-11T00:00:00');
-  const now = new Date();
-  const diff = wc - now;
-  if (diff <= 0) { document.getElementById('wc-countdown').textContent = '🟢 En cours !'; return; }
+  const diff = new Date('2026-06-11T00:00:00') - new Date();
+  const el = document.getElementById('wc-countdown');
+  if (!el) return;
+  if (diff <= 0) { el.textContent = '🟢 Tournoi en cours !'; return; }
   const days  = Math.floor(diff / 86400000);
   const hours = Math.floor((diff % 86400000) / 3600000);
-  document.getElementById('wc-countdown').textContent = `Debut dans ${days} jours et ${hours}h`;
+  el.textContent = `Debut dans ${days} jours et ${hours}h`;
 }
 
-// ===== COUPE DU MONDE EQUIPES =====
+// ===== EQUIPES CdM =====
 function renderWCTeams() {
-  updateCountdown();
   const container = document.getElementById('wc-teams-container');
-  if (container.innerHTML) return; // deja rendu
-
+  if (container.innerHTML) return;
   let html = '';
   for (const [group, teams] of Object.entries(WC_GROUPS)) {
     html += `<div class="group-title">${group}</div><div class="team-grid">`;
     for (const t of teams) {
       const cls = t.over05 >= 93 ? 'sure' : t.over05 >= 88 ? 'bon' : 'ok';
-      const badge = t.over05 >= 93 ? '🔥 SURE' : t.over05 >= 88 ? '✅ BON' : '⚠️ OK';
       html += `
         <div class="team-card" onclick="startSimWith('${t.name}')">
-          <div class="team-flag">${t.flag}</div>
+          <div class="team-flag">${flagImg(t.flag)}</div>
           <div class="team-info">
             <div class="team-name-wc">${t.name}</div>
-            <div class="team-odds">Force: ${t.strength}/100</div>
+            <div class="team-strength">Force: ${t.strength}/100</div>
           </div>
-          <div class="over05-badge" style="${cls==='sure'?'':'color:#ffc800;border-color:rgba(255,200,0,0.3);background:rgba(255,200,0,0.08)'}">${t.over05}%</div>
+          <div class="over05-badge ${cls}">${t.over05}%</div>
         </div>`;
     }
     html += `</div>`;
@@ -470,21 +451,22 @@ function renderWCTeams() {
 }
 
 // ===== SIMULATEUR =====
-const SIM_ROUNDS = ['Groupes', '8emes', 'Quarts', 'Demies', 'Finale'];
+const SIM_ROUNDS = ['Phase de groupes', '8emes de finale', 'Quarts de finale', 'Demi-finale', 'FINALE'];
 let simState = { team: null, round: 0, path: [], eliminated: false };
 
 function getOpponent(myTeam, round) {
-  const byStrength = [...ALL_TEAMS].filter(t => t.name !== myTeam.name).sort((a,b) => b.strength - a.strength);
-  const roundIndex = [0.8, 0.6, 0.4, 0.2, 0][round]; // plus fort au fur et a mesure
-  const pool = byStrength.slice(0, Math.ceil(byStrength.length * (roundIndex + 0.3)));
+  const others = ALL_TEAMS.filter(t => t.name !== myTeam.name);
+  const sorted  = [...others].sort((a, b) => b.strength - a.strength);
+  const topN    = Math.ceil(sorted.length * (0.3 + round * 0.15));
+  const pool    = sorted.slice(0, Math.max(topN, 6));
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
 function startSimWith(teamName) {
-  showTab('simulator');
   const team = ALL_TEAMS.find(t => t.name === teamName);
+  if (!team) return;
   simState = { team, round: 0, path: [], eliminated: false };
-  renderSimRound();
+  showTab('simulator');
 }
 
 function renderSimStart() {
@@ -493,7 +475,7 @@ function renderSimStart() {
   let html = `<p style="font-size:12px;color:#555;margin-bottom:16px">Choisis ton equipe :</p><div class="team-select-grid">`;
   for (const t of ALL_TEAMS) {
     html += `<div class="team-select-btn" onclick="startSimWith('${t.name}')">
-      <div class="flag">${t.flag}</div>
+      <div class="flag">${flagImg(t.flag)}</div>
       <div class="name">${t.name}</div>
     </div>`;
   }
@@ -502,16 +484,16 @@ function renderSimStart() {
 }
 
 function renderSimRound() {
-  if (simState.eliminated || simState.round >= SIM_ROUNDS.length) return;
+  if (!simState.team) return;
   const container = document.getElementById('sim-container');
   const { team, round, path } = simState;
-  const opponent = getOpponent(team, round);
+
+  if (simState.eliminated || round >= SIM_ROUNDS.length) return;
+
+  const opponent  = getOpponent(team, round);
+  const winProb   = Math.min(90, Math.max(20, Math.round(50 + (team.strength - opponent.strength) * 0.5)));
   const roundName = SIM_ROUNDS[round];
 
-  // Calcul probabilite victoire basee sur strength
-  const winProb = Math.round(50 + (team.strength - opponent.strength) * 0.4);
-
-  // Chemin parcouru
   let pathHtml = '<div class="path-tracker">';
   SIM_ROUNDS.forEach((r, i) => {
     const cls = i < round ? 'done' : i === round ? 'current' : '';
@@ -523,10 +505,14 @@ function renderSimRound() {
     ${pathHtml}
     <div class="sim-step">
       <div class="step-label">${roundName}</div>
-      <div class="step-match">${team.flag} ${team.name} vs ${opponent.flag} ${opponent.name}</div>
-      <div style="font-size:11px;color:#555;margin-bottom:12px">
-        Force: ${team.strength}/100 vs ${opponent.strength}/100 &nbsp;|&nbsp; 
-        Proba victoire: <span style="color:#00ff88;font-weight:700">${winProb}%</span>
+      <div class="step-match">
+        ${flagImg(team.flag)} ${team.name} &nbsp;vs&nbsp; ${flagImg(opponent.flag)} ${opponent.name}
+      </div>
+      <div style="font-size:11px;color:#555;margin:8px 0 4px">
+        Force ${team.strength}/100 vs ${opponent.strength}/100
+      </div>
+      <div style="font-size:12px;color:#00ff88;font-weight:700;margin-bottom:12px">
+        Probabilite victoire : ${winProb}%
       </div>
       <p style="font-size:12px;color:#888;margin-bottom:10px">Quel est le resultat ?</p>
       <div class="result-btns">
@@ -534,42 +520,42 @@ function renderSimRound() {
         <button class="result-btn draw" onclick="simChoose('draw', '${opponent.name}', '${opponent.flag}')">Nuls/Pen.</button>
         <button class="result-btn loss" onclick="simChoose('loss', '${opponent.name}', '${opponent.flag}')">Defaite</button>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 function simChoose(result, oppName, oppFlag) {
   const { team, round } = simState;
+  const roundName = SIM_ROUNDS[round];
 
   if (result === 'loss') {
     simState.eliminated = true;
-    const container = document.getElementById('sim-container');
-    const roundName = SIM_ROUNDS[round];
-    container.innerHTML = `
+    document.getElementById('sim-container').innerHTML = `
       <div class="sim-result" style="border-color:rgba(255,80,80,0.3);background:linear-gradient(135deg,#2e0a0a,#1a0d0d)">
         <div class="trophy">😢</div>
         <div class="result-title" style="color:#ff6464">Elimine en ${roundName}</div>
-        <div class="result-sub">${team.flag} ${team.name} sort de la competition</div>
+        <div class="result-sub">${flagImg(team.flag)} ${team.name} sort de la competition</div>
         <button class="restart-btn" style="color:#ff6464;border-color:rgba(255,80,80,0.3)" onclick="resetSim()">Rejouer</button>
       </div>`;
     return;
   }
 
-  simState.path.push({ round: SIM_ROUNDS[round], opponent: `${oppFlag} ${oppName}`, result });
+  simState.path.push({ round: roundName, opponent: `${oppName}`, oppFlag, result });
   simState.round++;
 
   if (simState.round >= SIM_ROUNDS.length) {
-    // CHAMPION DU MONDE
-    const container = document.getElementById('sim-container');
-    let pathSummary = simState.path.map(p =>
-      `<div style="font-size:11px;color:#888;margin:3px 0">${p.round} vs ${p.opponent} — <span style="color:#00ff88">${p.result === 'win' ? 'Victoire' : 'Nuls/Pen.'}</span></div>`
+    const pathSummary = simState.path.map(p =>
+      `<div style="font-size:11px;color:#888;margin:4px 0;display:flex;align-items:center;gap:6px">
+        <span style="color:#555;min-width:130px">${p.round}</span>
+        ${flagImg(p.oppFlag)} ${p.opponent}
+        <span style="color:#00ff88;margin-left:auto">${p.result === 'win' ? 'Victoire' : 'Pen.'}</span>
+      </div>`
     ).join('');
-    container.innerHTML = `
+    document.getElementById('sim-container').innerHTML = `
       <div class="sim-result">
         <div class="trophy">🏆</div>
         <div class="result-title">CHAMPION DU MONDE !</div>
-        <div class="result-sub">${team.flag} ${team.name} remporte la Coupe du Monde 2026</div>
-        <div style="margin-top:16px;padding:12px;background:rgba(0,0,0,0.3);border-radius:10px;text-align:left">${pathSummary}</div>
+        <div class="result-sub" style="margin-top:6px">${flagImg(team.flag)} ${team.name} remporte la Coupe du Monde 2026</div>
+        <div class="path-summary">${pathSummary}</div>
         <button class="restart-btn" onclick="resetSim()">Nouvelle simulation</button>
       </div>`;
     return;

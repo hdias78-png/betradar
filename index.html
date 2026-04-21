@@ -307,7 +307,7 @@ function loadMatches() {
   var dateBadge = document.getElementById('date-badge');
   if (!container) return;
   container.innerHTML = '<div class="loader"><div class="spinner"></div>Analyse des championnats...<br><small style="color:#333;margin-top:8px;display:block">10-15 secondes</small></div>';
-  fetch('/.netlify/functions/matches?path=smart-matches')
+  fetch('/api/matches?path=smart-matches')
     .then(function(res) { return res.json(); })
     .then(function(data) {
       if (dateBadge) dateBadge.textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
